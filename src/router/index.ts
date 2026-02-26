@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LoginView from '../views/LoginView.vue'
-import CardsView from '../views/CardsView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import CardsView from '../views/CardsView.vue'
+import MainLayout from '../layouts/MainLayout.vue' // Importe o layout
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,15 +20,23 @@ const router = createRouter({
       component: RegisterView,
       meta: { guestOnly: true },
     },
-    {
-      path: '/cards',
-      name: 'cards',
-      component: CardsView,
-      meta: { requiresAuth: true },
-    },
+    // Rota Pai (Layout)
     {
       path: '/',
-      redirect: '/cards',
+      component: MainLayout,
+      meta: { requiresAuth: true }, // Protege todo o layout e suas filhas
+      children: [
+        {
+          path: '', // Rota raiz redireciona para cards
+          redirect: '/cards',
+        },
+        {
+          path: 'cards', // Vai renderizar em /cards dentro do layout
+          name: 'cards',
+          component: CardsView,
+        },
+        // Adicione outras páginas logadas aqui no futuro (ex: perfil, configurações)
+      ],
     },
   ],
 })
