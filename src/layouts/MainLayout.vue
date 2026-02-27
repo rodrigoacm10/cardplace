@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import AppSidebar from '@/components/AppSidebar.vue'
-import { useRouter } from 'vue-router'
 import { LayoutDashboard } from 'lucide-vue-next'
-
-const router = useRouter()
 </script>
 
 <template>

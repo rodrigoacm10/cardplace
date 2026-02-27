@@ -2,16 +2,35 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/lib/api'
 
-interface User {
+export interface Card {
+  id: string
+  name: string
+  description: string
+  imageUrl: string
+  createdAt: string
+}
+
+export interface User {
   id: string
   name: string
   email: string
+  avatarUrl?: string
 }
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(localStorage.getItem('token') || sessionStorage.getItem('token'))
   const isAuthenticated = computed(() => !!token.value)
+
+  const userInitials = computed(() => {
+    if (!user.value?.name) return ''
+    const names = user.value.name.split(' ')
+    if (names.length >= 2) {
+      // return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
+      return user.value.name.substring(0, 2).toUpperCase()
+    }
+    return user.value.name.substring(0, 2).toUpperCase()
+  })
 
   async function login(
     credentials: { email: string; password: string },
@@ -41,35 +60,12 @@ export const useAuthStore = defineStore('auth', () => {
     sessionStorage.removeItem('token')
   }
 
-  async function fetchMe() {
-    if (!token.value) return
-    try {
-      const response = await api.get('/me')
-      user.value = response.data
-    } catch (error) {
-      logout()
-    }
-  }
-
-  async function register(data: { name: string; email: string; password: string }) {
-    try {
-      await api.post('/register', data)
-      return { success: true }
-    } catch (error: any) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Erro ao realizar registro',
-      }
-    }
-  }
-
   return {
     user,
     token,
     isAuthenticated,
+    userInitials,
     login,
-    register,
     logout,
-    fetchMe,
   }
 })
