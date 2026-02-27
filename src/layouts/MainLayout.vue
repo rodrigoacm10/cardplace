@@ -1,43 +1,28 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import { Button } from '@/components/ui/button'
 import AppSidebar from '@/components/AppSidebar.vue'
+import { useRouter } from 'vue-router'
 
-const authStore = useAuthStore()
 const router = useRouter()
-
-const handleLogout = () => {
-  authStore.logout()
-  router.push('/login')
-}
 </script>
 
 <template>
   <SidebarProvider>
     <AppSidebar />
 
-    <main class="w-full flex flex-col min-h-screen bg-zinc-950 text-white">
-      <header
-        class="sticky top-0 z-10 bg-red-200 flex justify-between items-center p-4 border-b border-zinc-800"
-      >
+    <main class="w-full flex flex-col min-h-screen text-white">
+      <header class="sticky top-0 z-10 bg-[#ffffff] flex justify-between items-center p-4">
         <div class="flex items-center gap-4">
-          <SidebarTrigger class="text-white hover:bg-zinc-900" />
+          <SidebarTrigger class="text-[#169366] hover:text-[#128159] cursor-pointer" />
           <div>
-            <h1 class="text-xl font-bold">CardPlace</h1>
+            <h1 class="text-[#169366] text-xl font-bold">CardPlace</h1>
           </div>
         </div>
-        <Button
-          @click="handleLogout"
-          variant="outline"
-          class="border-zinc-800 text-white hover:bg-zinc-900"
-        >
-          Sair
-        </Button>
+
+        <div></div>
       </header>
 
-      <div class="p-8 flex-1">
+      <div class="p-8 flex-1 bg-[#169366]">
         <div class="max-w-6xl mx-auto">
           <router-view />
         </div>

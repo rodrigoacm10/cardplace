@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="min-h-screen bg-zinc-95 text-white p-8">
+  <div class="min-h-screen text-white p-8">
     <div class="max-w-6xl mx-auto">
       <header class="flex justify-between items-center mb-12">
         <div>
