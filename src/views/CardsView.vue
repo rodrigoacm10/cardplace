@@ -3,12 +3,35 @@ import { onMounted } from 'vue'
 import { useCardsStore } from '@/stores/cards'
 import { Button } from '@/components/ui/button'
 import CardContainer from '@/components/CardContainer.vue'
+import gsap from 'gsap'
 
 const cardsStore = useCardsStore()
 
 onMounted(() => {
   cardsStore.fetchCards(true)
 })
+
+const onBeforeEnter = (el: Element) => {
+  gsap.set(el, {
+    opacity: 0,
+    y: 120,
+  })
+}
+
+const onEnter = (el: Element, done: () => void) => {
+  const htmlElement = el as HTMLElement
+
+  const index = htmlElement.dataset.index !== undefined ? Number(htmlElement.dataset.index) : 0
+
+  gsap.to(el, {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    delay: index * 0.2,
+    ease: 'power2.out',
+    onComplete: done,
+  })
+}
 </script>
 
 <template>
@@ -35,9 +58,22 @@ onMounted(() => {
           ></div>
         </div>
 
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <CardContainer v-for="card in cardsStore.list" :key="card.id" :card="card" />
-        </div>
+        <transition-group
+          v-else
+          appear
+          tag="div"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          @before-enter="onBeforeEnter"
+          @enter="onEnter"
+          :css="false"
+        >
+          <CardContainer
+            v-for="(card, index) in cardsStore.list"
+            :key="card.id"
+            :card="card"
+            :data-index="index % 10"
+          />
+        </transition-group>
 
         <div v-if="cardsStore.hasMore" class="flex justify-center mt-12">
           <Button
