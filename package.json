@@ -23,6 +23,7 @@
     "axios": "^1.13.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "gsap": "^3.14.2",
     "lucide-vue-next": "^0.575.0",
     "pinia": "^3.0.4",
     "reka-ui": "^2.8.2",
