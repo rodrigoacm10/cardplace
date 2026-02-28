@@ -9,7 +9,7 @@ import { LayoutDashboard } from 'lucide-vue-next'
     <AppSidebar />
 
     <main class="w-full flex flex-col min-h-screen text-white">
-      <header class="sticky top-0 z-80 bg-[#ffffff] flex justify-between items-center py-4 px-8">
+      <header class="sticky top-0 z-50 bg-[#ffffff] flex justify-between items-center py-4 px-8">
         <div class="flex items-center gap-4">
           <SidebarTrigger class="text-[#169366] hover:text-[#128159] cursor-pointer" />
           <div>

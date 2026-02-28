@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useCardsStore } from '@/stores/cards'
+import { computed } from 'vue'
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { CardsService } from '@/services/cards.service'
 import { Button } from '@/components/ui/button'
 import CardContainer from '@/components/CardContainer.vue'
 import gsap from 'gsap'
 
-const cardsStore = useCardsStore()
-
-onMounted(() => {
-  cardsStore.fetchCards(true)
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
+  queryKey: ['cards'],
+  queryFn: ({ pageParam = 1 }) =>
+    CardsService.getCards({ page: pageParam as number, rpp: 12 }).then((res) => res.data),
+  initialPageParam: 1,
+  getNextPageParam: (lastPage) => (lastPage.more ? lastPage.page + 1 : undefined),
 })
+
+const allCards = computed(() => data.value?.pages.flatMap((page) => page.list) || [])
 
 const onBeforeEnter = (el: Element) => {
   gsap.set(el, {
@@ -20,14 +25,13 @@ const onBeforeEnter = (el: Element) => {
 
 const onEnter = (el: Element, done: () => void) => {
   const htmlElement = el as HTMLElement
-
   const index = htmlElement.dataset.index !== undefined ? Number(htmlElement.dataset.index) : 0
 
   gsap.to(el, {
     opacity: 1,
     y: 0,
     duration: 0.5,
-    delay: index * 0.2,
+    delay: index * 0.1,
     ease: 'power2.out',
     onComplete: done,
   })
@@ -48,7 +52,7 @@ const onEnter = (el: Element, done: () => void) => {
 
       <div>
         <div
-          v-if="cardsStore.isLoading && cardsStore.list.length === 0"
+          v-if="isLoading && allCards.length === 0"
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         >
           <div
@@ -68,27 +72,24 @@ const onEnter = (el: Element, done: () => void) => {
           :css="false"
         >
           <CardContainer
-            v-for="(card, index) in cardsStore.list"
+            v-for="(card, index) in allCards"
             :key="card.id"
             :card="card"
-            :data-index="index % 10"
+            :data-index="index % 12"
           />
         </transition-group>
 
-        <div v-if="cardsStore.hasMore" class="flex justify-center mt-12">
+        <div v-if="hasNextPage" class="flex justify-center mt-12">
           <Button
-            @click="cardsStore.fetchCards(false)"
-            :disabled="cardsStore.isLoading"
+            @click="fetchNextPage()"
+            :disabled="isFetchingNextPage"
             class="bg-[#169366] text-white hover:bg-[#128159] px-8"
           >
-            {{ cardsStore.isLoading ? 'Carregando...' : 'Carregar mais' }}
+            {{ isFetchingNextPage ? 'Carregando...' : 'Carregar mais' }}
           </Button>
         </div>
 
-        <div
-          v-if="!cardsStore.isLoading && cardsStore.list.length === 0"
-          class="text-center py-12 text-zinc-500"
-        >
+        <div v-if="!isLoading && allCards.length === 0" class="text-center py-12 text-zinc-500">
           Nenhuma carta disponível no marketplace no momento.
         </div>
       </div>

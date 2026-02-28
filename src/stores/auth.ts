@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import api from '@/lib/api'
+import { AuthService, type LoginCredentials, type RegisterData } from '@/services/auth.service'
 
 export interface Card {
   id: string
@@ -32,12 +32,9 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value.name.substring(0, 2).toUpperCase()
   })
 
-  async function login(
-    credentials: { email: string; password: string },
-    rememberMe: boolean = false,
-  ) {
+  async function login(credentials: LoginCredentials, rememberMe: boolean = false) {
     try {
-      const response = await api.post('/login', credentials)
+      const response = await AuthService.login(credentials)
       token.value = response.data.token
       user.value = response.data.user
 
@@ -49,6 +46,18 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         message: error.response?.data?.message || 'Erro ao realizar login',
+      }
+    }
+  }
+
+  async function register(data: RegisterData) {
+    try {
+      await AuthService.register(data)
+      return { success: true }
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Erro ao realizar cadastro',
       }
     }
   }
@@ -66,6 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     userInitials,
     login,
+    register,
     logout,
   }
 })
