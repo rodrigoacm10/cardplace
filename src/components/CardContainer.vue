@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Button } from '@/components/ui/button'
+import { useQuery } from '@tanstack/vue-query'
+import { CollectionService } from '@/services/collection.service'
+import { Check, ArrowLeftRight } from 'lucide-vue-next'
 
 interface Card {
   id: string
@@ -10,9 +13,19 @@ interface Card {
   createdAt: string
 }
 
-defineProps<{
+const props = defineProps<{
   card: Card
 }>()
+
+const { data: collectionData } = useQuery({
+  queryKey: ['collection'],
+  queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
+  staleTime: 1000 * 60 * 5,
+})
+
+const isInCollection = computed(() => {
+  return collectionData.value?.cards?.some((c: Card) => c.id === props.card.id) || false
+})
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
@@ -114,6 +127,14 @@ const cardStyle = computed(() => {
         class="object-cover w-full h-full aspect-[472/687]"
         @error="handleImageError"
       />
+
+      <div
+        v-if="isInCollection"
+        class="absolute top-3 right-3 font-bold bg-[#ffffff] text-[#169366] px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 shadow-lg border border-[#169366] border-2 uppercase tracking-wider backdrop-blur-sm"
+      >
+        <Check class="w-3 h-3" />
+        Já possui
+      </div>
     </div>
 
     <div
@@ -148,11 +169,18 @@ const cardStyle = computed(() => {
           {{ card.description }}
         </p>
 
-        <div class="mt-5 pt-4 border-t border-zinc-100 flex justify-end">
+        <div class="mt-5 pt-4 border-t border-zinc-100 flex gap-3">
           <Button
-            class="w-full bg-[#169366] text-white hover:bg-[#128159] transition-colors shadow-md cursor-pointer"
+            class="flex-1 bg-white text-[#169366] border border-[#169366] hover:bg-[#169366]/5 transition-colors shadow-sm cursor-pointer"
           >
-            Ver Detalhes
+            Detalhes
+          </Button>
+
+          <Button
+            class="flex-1 bg-[#e25b39] text-white hover:bg-[#ce4d2c] transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
+          >
+            <ArrowLeftRight class="w-4 h-4" />
+            Trocar
           </Button>
         </div>
       </div>
