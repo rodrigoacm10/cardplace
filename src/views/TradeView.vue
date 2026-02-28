@@ -1,18 +1,23 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
 import { CollectionService } from '@/services/collection.service'
 import { TradeService } from '@/services/trade.service'
-import { Button } from '@/components/ui/button'
 import { ArrowLeftRight, ChevronLeft, Check, Plus } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
+import gsap from 'gsap'
 
 const route = useRoute()
 const router = useRouter()
 const queryClient = useQueryClient()
+
+const shockwaveRef = ref(null)
+const offeringRef = ref(null)
+const receivingRef = ref(null)
+const centralButtonRef = ref(null)
 
 const receivingId = computed(() => route.query.receivingId as string)
 
@@ -35,12 +40,51 @@ const offeringCards = computed(() =>
 )
 
 const isChoosingCard = ref(false)
+const isTrading = ref(false)
 
 const tradeMutation = useMutation({
   mutationFn: (data: any) => TradeService.createTrade(data),
-  onSuccess: () => {
+  onSuccess: async () => {
+    isTrading.value = true
     toast.success('Troca realizada com sucesso!')
     queryClient.invalidateQueries({ queryKey: ['collection'] })
+
+    await nextTick()
+
+    const tl = gsap.timeline()
+    const isMobile = window.innerWidth < 768
+
+    tl.to(centralButtonRef.value, {
+      scale: 0,
+      opacity: 0,
+      duration: 0.5,
+      ease: 'back.in',
+    })
+
+    if (shockwaveRef.value) {
+      tl.fromTo(
+        shockwaveRef.value,
+        { scale: 0.5, opacity: 1, borderWidth: '10px' },
+        {
+          scale: 60,
+          opacity: 0,
+          borderWidth: '1px',
+          duration: 2,
+          ease: 'power2.out',
+        },
+        0,
+      )
+    }
+
+    if (isMobile) {
+      tl.to(offeringRef.value, { x: '150vw', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
+      tl.to(receivingRef.value, { x: '-150vw', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
+    } else {
+      tl.to(offeringRef.value, { y: '-150vh', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
+      tl.to(receivingRef.value, { y: '150vh', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
+    }
+
+    await tl.play()
     router.push('/cards')
   },
   onError: () => {
@@ -88,7 +132,7 @@ const toggleCardSelection = (id: string) => {
     <div
       class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-8 md:gap-16"
     >
-      <div class="flex flex-col items-center gap-6">
+      <div ref="offeringRef" class="flex flex-col items-center gap-6">
         <span class="text-zinc-500 font-bold uppercase tracking-wider text-sm">Você Oferece</span>
 
         <div
@@ -145,7 +189,13 @@ const toggleCardSelection = (id: string) => {
         </div>
       </div>
 
-      <div class="flex flex-col items-center justify-center py-4">
+      <div ref="centralButtonRef" class="flex flex-col items-center justify-center py-4 relative">
+        <div
+          v-show="isTrading"
+          ref="shockwaveRef"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rotate-45 border-[#169366] bg-[#169366]/10 z-100 pointer-events-none opacity-0"
+        ></div>
+
         <button
           @click="handleTrade"
           :disabled="offeringCardIds.length === 0 || tradeMutation.isPending.value"
@@ -161,7 +211,7 @@ const toggleCardSelection = (id: string) => {
         </button>
       </div>
 
-      <div class="flex flex-col items-center gap-6">
+      <div ref="receivingRef" class="flex flex-col items-center gap-6">
         <span class="text-zinc-500 font-bold uppercase tracking-wider text-sm">Você Recebe</span>
 
         <div
@@ -188,4 +238,3 @@ const toggleCardSelection = (id: string) => {
     />
   </div>
 </template>
-
