@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/vue-query'
 import { CollectionService } from '@/services/collection.service'
@@ -17,6 +18,8 @@ const props = defineProps<{
   card: Card
 }>()
 
+const router = useRouter()
+
 const { data: collectionData } = useQuery({
   queryKey: ['collection'],
   queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
@@ -27,6 +30,14 @@ const isInCollection = computed(() => {
   return collectionData.value?.cards?.some((c: Card) => c.id === props.card.id) || false
 })
 
+const navigateToDetails = () => {
+  router.push(`/cards/${props.card.id}`)
+}
+
+const navigateToTrade = () => {
+  router.push('/trade')
+}
+
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
   target.src = 'https://via.placeholder.com/472x687?text=Sem+Imagem'
@@ -36,6 +47,7 @@ const cardRef = ref<HTMLElement | null>(null)
 const rotateX = ref(0)
 const rotateY = ref(0)
 const isHovered = ref(false)
+const isClicked = ref(false)
 
 const showTooltip = ref(false)
 const tooltipPosition = ref<'left' | 'right'>('right')
@@ -89,8 +101,30 @@ const handleMouseLeave = () => {
 
   hideTimeout = setTimeout(() => {
     showTooltip.value = false
+    isClicked.value = false
   }, 300)
 }
+
+const handleCardClick = () => {
+  if (showTooltip.value) {
+    showTooltip.value = false
+    isClicked.value = false
+  } else {
+    isClicked.value = true
+    calculatePosition()
+    showTooltip.value = true
+  }
+}
+
+const handleClose = () => {
+  showTooltip.value = false
+  isClicked.value = false
+}
+
+onUnmounted(() => {
+  if (showTimeout) clearTimeout(showTimeout)
+  if (hideTimeout) clearTimeout(hideTimeout)
+})
 
 const cardStyle = computed(() => {
   if (!isHovered.value) {
@@ -116,10 +150,11 @@ const cardStyle = computed(() => {
   >
     <div
       ref="cardRef"
-      class="relative bg-zinc-900 rounded-xl overflow-hidden shadow-sm flex flex-col transform-style-3d will-change-transform cursor-pointer"
+      class="relative bg-zinc-900 overflow-hidde shadow-sm flex flex-col transform-style-3d will-change-transform cursor-pointer"
       :class="{ 'shadow-2xl': isHovered }"
       :style="cardStyle"
       @mousemove="handleMouseMove"
+      @click="handleCardClick"
     >
       <img
         :src="card.imageUrl"
@@ -130,7 +165,7 @@ const cardStyle = computed(() => {
 
       <div
         v-if="isInCollection"
-        class="absolute top-3 right-3 font-bold bg-[#ffffff] text-[#169366] px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 shadow-lg border border-[#169366] border-2 uppercase tracking-wider backdrop-blur-sm"
+        class="absolute -top-3 -right-3 font-bold bg-[#169366] text-white px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 shadow-lg border border-[#ffffff] border-2 uppercase tracking-wider backdrop-blur-sm"
       >
         <Check class="w-3 h-3" />
         Já possui
@@ -138,13 +173,16 @@ const cardStyle = computed(() => {
     </div>
 
     <div
-      class="absolute top-1/2 -translate-y-1/2 w-72 bg-white rounded-xl shadow-2xl p-5 border border-zinc-200 transition-all duration-300 flex flex-col"
+      class="rounded-xl shadow-2xl p-5 border border-zinc-200 transition-all duration-300 flex flex-col z-20"
+      @click="handleClose"
       :class="[
         showTooltip
           ? 'opacity-100 visible pointer-events-auto'
           : 'opacity-0 invisible pointer-events-none',
 
-        tooltipPosition === 'right' ? 'left-full ml-4' : 'right-full mr-4',
+        'absolute inset-0 w-full h-full bg-zinc-900/60 backdrop-blur-md sm:bg-white sm:backdrop-blur-none sm:inset-auto sm:top-1/2 sm:-translate-y-1/2 sm:w-72',
+
+        tooltipPosition === 'right' ? 'sm:left-full sm:ml-4' : 'sm:right-full sm:mr-4',
 
         showTooltip
           ? 'translate-x-0'
@@ -154,30 +192,33 @@ const cardStyle = computed(() => {
       ]"
     >
       <div
-        class="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-zinc-200 transform rotate-45"
+        class="hidden sm:block absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-zinc-200 transform rotate-45"
         :class="
           tooltipPosition === 'right' ? '-left-2 border-b border-l' : '-right-2 border-t border-r'
         "
       ></div>
 
       <div class="relative z-10 flex flex-col h-full">
-        <h2 class="text-xl font-bold text-[#169366] truncate" :title="card.name">
+        <h2 class="text-xl font-bold text-white sm:text-[#169366] truncate" :title="card.name">
           {{ card.name }}
         </h2>
 
-        <p class="text-sm text-zinc-600 mt-3 line-clamp-6 flex-grow leading-relaxed">
+        <p class="text-sm text-zinc-200 sm:text-zinc-600 mt-3 line-clamp-6 grow leading-relaxed">
           {{ card.description }}
         </p>
 
         <div class="mt-5 pt-4 border-t border-zinc-100 flex gap-3">
           <Button
+            @click.stop="navigateToDetails"
             class="flex-1 bg-white text-[#169366] border border-[#169366] hover:bg-[#169366]/5 transition-colors shadow-sm cursor-pointer"
           >
             Detalhes
           </Button>
 
           <Button
+            @click.stop="navigateToTrade"
             class="flex-1 bg-[#e25b39] text-white hover:bg-[#ce4d2c] transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
+            :disabled="isInCollection"
           >
             <ArrowLeftRight class="w-4 h-4" />
             Trocar
