@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CardsView from '../views/CardsView.vue'
+import TradeView from '../views/TradeView.vue'
 import MainLayout from '../layouts/MainLayout.vue' // Importe o layout
 
 const router = createRouter({
@@ -34,6 +35,11 @@ const router = createRouter({
           path: 'cards', // Vai renderizar em /cards dentro do layout
           name: 'cards',
           component: CardsView,
+        },
+        {
+          path: 'trade',
+          name: 'trade',
+          component: TradeView,
         },
         // Adicione outras páginas logadas aqui no futuro (ex: perfil, configurações)
       ],
