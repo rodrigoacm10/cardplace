@@ -1,7 +1,6 @@
-// src/stores/collection.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import api from '@/lib/api'
+import { CollectionService } from '@/services/collection.service'
 import { useAuthStore } from './auth'
 import type { Card } from './auth'
 
@@ -14,7 +13,7 @@ export const useCollectionStore = defineStore('collection', () => {
   async function fetchMyCollection() {
     isLoading.value = true
     try {
-      const response = await api.get('/me')
+      const response = await CollectionService.getMyCollection()
 
       const authStore = useAuthStore()
       authStore.user = {
@@ -28,7 +27,6 @@ export const useCollectionStore = defineStore('collection', () => {
     } catch (error: any) {
       console.error('Erro ao buscar a coleção do usuário:', error)
 
-      // Desloga APENAS se o erro for 401 (Não autorizado/Token inválido)
       if (error.response && error.response.status === 401) {
         const authStore = useAuthStore()
         authStore.logout()

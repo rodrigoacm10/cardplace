@@ -1,26 +1,47 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, watch } from 'vue'
 import { Sidebar, SidebarContent, SidebarGroup } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth'
-import { useCollectionStore } from '@/stores/collection'
+import { useQuery } from '@tanstack/vue-query'
+import { CollectionService } from '@/services/collection.service'
 import { LogOut } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import AddCardsDialog from '@/components/AddCardsDialog.vue'
 
 const authStore = useAuthStore()
-const collectionStore = useCollectionStore()
 const router = useRouter()
 
-onMounted(() => {
-  collectionStore.fetchMyCollection()
+const { data: collectionData, isLoading } = useQuery({
+  queryKey: ['collection'],
+  queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
+  retry: (failureCount, error: any) => {
+    if (error.response?.status === 401) return false
+    return failureCount < 3
+  },
 })
+
+watch(
+  collectionData,
+  (newData) => {
+    if (newData) {
+      authStore.user = {
+        id: newData.id,
+        name: newData.name,
+        email: newData.email,
+        avatarUrl: newData.avatarUrl,
+      }
+    }
+  },
+  { immediate: true },
+)
+
+const myCardsCount = computed(() => collectionData.value?.cards?.length || 0)
 
 const handleLogout = () => {
   authStore.logout()
   router.push('/login')
 }
-
-console.log('USer ', authStore.user)
 </script>
 
 <template>
@@ -43,7 +64,7 @@ console.log('USer ', authStore.user)
 
             <div class="text-center w-full truncate">
               <p class="font-bold text-lg text-[#169366] truncate" :title="authStore.user?.name">
-                {{ collectionStore.isLoading ? 'Carregando...' : authStore.user?.name }}
+                {{ isLoading ? 'Carregando...' : authStore.user?.name }}
               </p>
               <p class="text-sm truncate text-gray-500" :title="authStore.user?.email">
                 {{ authStore.user?.email || '' }}
@@ -51,21 +72,25 @@ console.log('USer ', authStore.user)
             </div>
           </div>
 
-          <div class="space-y-2 w-full text-center">
+          <div class="space-y-2 w-full text-center flex flex-col items-center">
             <p class="font-semibold">Número de cartas</p>
 
-            <div class="border rounded-lg flex justify-center bg-[#169366] transition-all">
+            <div
+              class="border rounded-lg flex justify-center w-full max-w-[120px] bg-[#169366] transition-all"
+            >
               <p class="text-white font-bold text-xl py-3">
-                {{ collectionStore.isLoading ? '-' : collectionStore.myCardsCount }}
+                {{ isLoading ? '-' : myCardsCount }}
               </p>
             </div>
+
+            <AddCardsDialog />
           </div>
         </div>
 
         <Button
           @click="handleLogout"
           variant="ghost"
-          class="flex items-center justify-center gap-2 rounded-lg w-full text-red-600 hover:text-red-600 cursor-pointer hover:bg-[#e0e0e0]"
+          class="flex items-center justify-center gap-2 rounded-lg w-full text-red-600 hover:text-red-600 cursor-pointer hover:bg-red-50 mt-4"
         >
           <LogOut class="w-5 h-5" />
           Sair

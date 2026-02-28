@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import api from '@/lib/api'
+import { CardsService } from '@/services/cards.service'
 import type { Card } from './auth'
 
 export const useCardsStore = defineStore('cards', () => {
@@ -18,11 +18,9 @@ export const useCardsStore = defineStore('cards', () => {
 
     isLoading.value = true
     try {
-      const response = await api.get('/cards', {
-        params: {
-          page: page.value,
-          rpp: rpp.value,
-        },
+      const response = await CardsService.getCards({
+        page: page.value,
+        rpp: rpp.value,
       })
 
       if (reset) {
