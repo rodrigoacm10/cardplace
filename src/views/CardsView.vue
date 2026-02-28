@@ -62,22 +62,23 @@ const onEnter = (el: Element, done: () => void) => {
           ></div>
         </div>
 
-        <transition-group
-          v-else
-          appear
-          tag="div"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          @before-enter="onBeforeEnter"
-          @enter="onEnter"
-          :css="false"
-        >
-          <CardContainer
-            v-for="(card, index) in allCards"
-            :key="card.id"
-            :card="card"
-            :data-index="index % 12"
-          />
-        </transition-group>
+        <div v-else class="w-full flex items-center justify-center">
+          <transition-group
+            appear
+            tag="div"
+            class="grid w-[calc(100%-6rem)] sm:w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            @before-enter="onBeforeEnter"
+            @enter="onEnter"
+            :css="false"
+          >
+            <CardContainer
+              v-for="(card, index) in allCards"
+              :key="card.id"
+              :card="card"
+              :data-index="index % 12"
+            />
+          </transition-group>
+        </div>
 
         <div v-if="hasNextPage" class="flex justify-center mt-12">
           <Button
