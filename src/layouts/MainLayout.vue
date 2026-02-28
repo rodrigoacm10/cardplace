@@ -25,16 +25,16 @@ import { LayoutDashboard } from 'lucide-vue-next'
 
           <div class="bg-[#4e4e4d] w-0.5 h-6"></div>
 
-          <router-link to="/cards" class="flex items-center">
+          <router-link to="/trades" class="flex items-center">
             <LayoutDashboard class="w-4 h-4 mr-2" />
-            <span>Marketplace</span>
+            <span>Trades</span>
           </router-link>
 
           <div class="bg-[#4e4e4d] w-0.5 h-6"></div>
 
-          <router-link to="/cards" class="flex items-center">
+          <router-link to="/collection" class="flex items-center">
             <LayoutDashboard class="w-4 h-4 mr-2" />
-            <span>Marketplace</span>
+            <span>Collection</span>
           </router-link>
         </div>
       </header>
