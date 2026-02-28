@@ -152,7 +152,7 @@ const toggleCardSelection = (id: string) => {
                 }"
               >
                 <div
-                  class="w-full h-full rounded-2xl border border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl"
+                  class="w-full h-full border border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl"
                 >
                   <img :src="card.imageUrl" class="w-full h-full object-cover" />
                 </div>

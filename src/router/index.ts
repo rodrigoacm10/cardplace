@@ -4,7 +4,8 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CardsView from '../views/CardsView.vue'
 import TradeView from '../views/TradeView.vue'
-import MainLayout from '../layouts/MainLayout.vue' // Importe o layout
+import TradesView from '../views/TradesView.vue'
+import MainLayout from '../layouts/MainLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,11 @@ const router = createRouter({
           path: 'trade',
           name: 'trade',
           component: TradeView,
+        },
+        {
+          path: 'trades',
+          name: 'trades',
+          component: TradesView,
         },
         // Adicione outras páginas logadas aqui no futuro (ex: perfil, configurações)
       ],
