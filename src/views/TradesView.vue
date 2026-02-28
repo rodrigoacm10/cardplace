@@ -2,10 +2,14 @@
 import { ref, computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { TradeService, type Trade } from '@/services/trade.service'
-import { ArrowRight, History, User, Calendar } from 'lucide-vue-next'
+import { ArrowRight, History, User, Calendar, Trash2, Loader2 } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import TradeDetailsDialog from '@/components/TradeDetailsDialog.vue'
+import { toast } from 'vue-sonner'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { Button } from '@/components/ui/button'
+import TradeDeleteDialog from '@/components/TradeDeleteDialog.vue'
 
 const {
   data: tradesData,
@@ -34,12 +38,42 @@ const formatDate = (dateString: string) => {
   }
 }
 
+const queryClient = useQueryClient()
 const isDetailsOpen = ref(false)
 const selectedTrade = ref<Trade | null>(null)
 
 const openDetails = (trade: Trade) => {
   selectedTrade.value = trade
   isDetailsOpen.value = true
+}
+
+// Delete Logic
+const isDeleteDialogOpen = ref(false)
+const tradeToDelete = ref<string | null>(null)
+
+const confirmDelete = (e: Event, tradeId: string) => {
+  e.stopPropagation()
+  tradeToDelete.value = tradeId
+  isDeleteDialogOpen.value = true
+}
+
+const deleteMutation = useMutation({
+  mutationFn: (id: string) => TradeService.deleteTrade(id),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['trades'] })
+    toast.success('Troca removida com sucesso!')
+    isDeleteDialogOpen.value = false
+    tradeToDelete.value = null
+  },
+  onError: () => {
+    toast.error('Erro ao remover troca.')
+  },
+})
+
+const handleDelete = () => {
+  if (tradeToDelete.value) {
+    deleteMutation.mutate(tradeToDelete.value)
+  }
 }
 </script>
 
@@ -70,7 +104,10 @@ const openDetails = (trade: Trade) => {
 
       <div v-else-if="isError" class="bg-red-50 border border-red-100 p-8 rounded-3xl text-center">
         <p class="text-red-600 font-medium">Ocorreu um erro ao carregar as trocas.</p>
-        <button @click="() => {}" class="mt-4 text-sm font-bold text-red-700 underline">
+        <button
+          @click="() => queryClient.invalidateQueries({ queryKey: ['trades'] })"
+          class="mt-4 text-sm font-bold text-red-700 underline"
+        >
           Tentar novamente
         </button>
       </div>
@@ -112,11 +149,14 @@ const openDetails = (trade: Trade) => {
                 {{ formatDate(trade.createdAt) }}
               </div>
             </div>
-            <div
-              class="text-[#169366] text-xs font-black uppercase tracking-widest bg-[#169366]/5 px-3 py-1 rounded-full"
+
+            <button
+              @click="confirmDelete($event, trade.id)"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+              title="Deletar Troca"
             >
-              Troca Concluída
-            </div>
+              <Trash2 class="w-4 h-4" />
+            </button>
           </div>
 
           <div class="flex items-center justify-center gap-8 lg:gap-4">
@@ -175,5 +215,12 @@ const openDetails = (trade: Trade) => {
     </div>
 
     <TradeDetailsDialog v-model:isOpen="isDetailsOpen" :trade="selectedTrade" />
+
+    <TradeDeleteDialog
+      v-model:isOpen="isDeleteDialogOpen"
+      :tradeId="tradeToDelete"
+      :isPending="deleteMutation.isPending.value"
+      @delete="handleDelete"
+    />
   </div>
 </template>

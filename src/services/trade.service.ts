@@ -47,4 +47,7 @@ export const TradeService = {
   async getTrades(params: GetTradesParams = { rpp: 10, page: 1 }) {
     return api.get<TradeResponse>('/trades', { params })
   },
+  async deleteTrade(id: string) {
+    return api.delete(`/trades/${id}`)
+  },
 }
