@@ -35,7 +35,10 @@ const navigateToDetails = () => {
 }
 
 const navigateToTrade = () => {
-  router.push('/trade')
+  router.push({
+    path: '/trade',
+    query: { receivingId: props.card.id },
+  })
 }
 
 const handleImageError = (event: Event) => {

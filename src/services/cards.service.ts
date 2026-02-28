@@ -10,4 +10,7 @@ export const CardsService = {
   async getCards(params: GetCardsParams) {
     return api.get('/cards', { params })
   },
+  async getCardById(id: string) {
+    return api.get(`/cards/${id}`)
+  },
 }
