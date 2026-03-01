@@ -135,18 +135,18 @@ const handleDelete = () => {
           class="bg-white border border-zinc-200 rounded-3xl p-6 hover:shadow-xl hover:border-[#169366]/30 transition-all group cursor-pointer"
         >
           <div
-            class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-zinc-100"
+            class="flex flex-wrap justify-between items-start gap-4 mb-6 pb-4 border-b border-zinc-100"
           >
-            <div class="flex items-center gap-4">
+            <div class="flex items-start flex-col gap-4">
+              <div class="flex items-center gap-2 text-zinc-400 text-xs font-medium">
+                <Calendar class="w-3.5 h-3.5" />
+                {{ formatDate(trade.createdAt) }}
+              </div>
               <div
                 class="flex items-center gap-2 text-zinc-600 bg-zinc-50 px-3 py-1.5 rounded-full text-xs font-bold"
               >
                 <User class="w-3.5 h-3.5" />
                 {{ trade.user.name }}
-              </div>
-              <div class="flex items-center gap-2 text-zinc-400 text-xs font-medium">
-                <Calendar class="w-3.5 h-3.5" />
-                {{ formatDate(trade.createdAt) }}
               </div>
             </div>
 
