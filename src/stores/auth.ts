@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import axios from 'axios'
 import { AuthService, type LoginCredentials, type RegisterData } from '@/services/auth.service'
 
 export interface Card {
@@ -17,6 +18,8 @@ export interface User {
   avatarUrl?: string
 }
 
+export type AuthResponse = { success: true } | { success: false; message: string }
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(localStorage.getItem('token') || sessionStorage.getItem('token'))
@@ -32,7 +35,10 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value.name.substring(0, 2).toUpperCase()
   })
 
-  async function login(credentials: LoginCredentials, rememberMe: boolean = false) {
+  async function login(
+    credentials: LoginCredentials,
+    rememberMe: boolean = false,
+  ): Promise<AuthResponse> {
     try {
       const response = await AuthService.login(credentials)
       token.value = response.data.token
@@ -42,22 +48,30 @@ export const useAuthStore = defineStore('auth', () => {
       storage.setItem('token', response.data.token)
 
       return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let message = 'Erro ao realizar login'
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        message = error.response.data.message
+      }
       return {
         success: false,
-        message: error.response?.data?.message || 'Erro ao realizar login',
+        message,
       }
     }
   }
 
-  async function register(data: RegisterData) {
+  async function register(data: RegisterData): Promise<AuthResponse> {
     try {
       await AuthService.register(data)
       return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let message = 'Erro ao realizar cadastro'
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        message = error.response.data.message
+      }
       return {
         success: false,
-        message: error.response?.data?.message || 'Erro ao realizar cadastro',
+        message,
       }
     }
   }

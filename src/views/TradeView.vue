@@ -4,7 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
 import { CollectionService } from '@/services/collection.service'
-import { TradeService } from '@/services/trade.service'
+import { TradeService, type TradePayload } from '@/services/trade.service'
+import { type Card } from '@/stores/auth'
 import { ArrowLeftRight, ChevronLeft, Check, Plus } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
@@ -36,14 +37,14 @@ const myCards = computed(() => myCollection.value?.cards || [])
 
 const offeringCardIds = ref<string[]>([])
 const offeringCards = computed(() =>
-  myCards.value.filter((c: any) => offeringCardIds.value.includes(c.id)),
+  myCards.value.filter((c: Card) => offeringCardIds.value.includes(c.id)),
 )
 
 const isChoosingCard = ref(false)
 const isTrading = ref(false)
 
 const tradeMutation = useMutation({
-  mutationFn: (data: any) => TradeService.createTrade(data),
+  mutationFn: (data: TradePayload) => TradeService.createTrade(data),
   onSuccess: async () => {
     isTrading.value = true
     toast.success('Troca realizada com sucesso!')

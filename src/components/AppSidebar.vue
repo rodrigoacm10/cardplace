@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
+import axios from 'axios'
 import { Sidebar, SidebarContent, SidebarGroup } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth'
@@ -15,8 +16,8 @@ const router = useRouter()
 const { data: collectionData, isLoading } = useQuery({
   queryKey: ['collection'],
   queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
-  retry: (failureCount, error: any) => {
-    if (error.response?.status === 401) return false
+  retry: (failureCount, error: unknown) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) return false
     return failureCount < 3
   },
 })

@@ -52,7 +52,6 @@ const cardRef = ref<HTMLElement | null>(null)
 const rotateX = ref(0)
 const rotateY = ref(0)
 const isHovered = ref(false)
-const isClicked = ref(false)
 
 const showTooltip = ref(false)
 const isTooltipHovered = ref(false)
@@ -134,9 +133,8 @@ const handleMouseLeave = () => {
   if (showTimeout) clearTimeout(showTimeout)
 
   hideTimeout = setTimeout(() => {
-    if (!isHovered.value && !isTooltipHovered.value && !isClicked.value) {
+    if (!isHovered.value && !isTooltipHovered.value) {
       showTooltip.value = false
-      isClicked.value = false
     }
   }, 300)
 }
@@ -151,27 +149,14 @@ const handleTooltipMouseLeave = () => {
   if (hideTimeout) clearTimeout(hideTimeout)
 
   hideTimeout = setTimeout(() => {
-    if (!isHovered.value && !isTooltipHovered.value && !isClicked.value) {
+    if (!isHovered.value && !isTooltipHovered.value) {
       showTooltip.value = false
-      isClicked.value = false
     }
   }, 300)
 }
 
-const handleCardClick = () => {
-  if (showTooltip.value) {
-    showTooltip.value = false
-    isClicked.value = false
-  } else {
-    isClicked.value = true
-    calculatePosition()
-    showTooltip.value = true
-  }
-}
-
 const handleClose = () => {
   showTooltip.value = false
-  isClicked.value = false
 }
 
 const cardStyle = computed(() => {
@@ -202,7 +187,6 @@ const cardStyle = computed(() => {
       :class="{ 'shadow-2xl': isHovered }"
       :style="cardStyle"
       @mousemove="handleMouseMove"
-      @click="handleCardClick"
     >
       <img
         :src="card.imageUrl"

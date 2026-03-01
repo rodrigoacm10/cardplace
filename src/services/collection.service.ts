@@ -1,11 +1,16 @@
 import api from '@/lib/api'
+import type { Card, User } from '@/stores/auth'
 
 export interface AddCardsData {
   cardIds: string[]
 }
 
+export interface UserWithCards extends User {
+  cards: Card[]
+}
+
 export interface CollectionResponse {
-  list: any[]
+  list: Card[]
   rpp: number
   page: number
   more: boolean
@@ -13,11 +18,11 @@ export interface CollectionResponse {
 
 export const CollectionService = {
   async getMyCollection() {
-    return api.get('/me')
+    return api.get<UserWithCards>('/me')
   },
 
   async getMyCards() {
-    return api.get<any[]>('/me/cards')
+    return api.get<Card[]>('/me/cards')
   },
 
   async addCardsToCollection(data: AddCardsData) {

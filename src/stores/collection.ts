@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import axios from 'axios'
 import { CollectionService } from '@/services/collection.service'
 import { useAuthStore } from './auth'
 import type { Card } from './auth'
@@ -24,10 +25,10 @@ export const useCollectionStore = defineStore('collection', () => {
       }
 
       myCards.value = response.data.cards || []
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao buscar a coleção do usuário:', error)
 
-      if (error.response && error.response.status === 401) {
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
         const authStore = useAuthStore()
         authStore.logout()
       }

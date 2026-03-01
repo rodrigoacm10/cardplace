@@ -7,12 +7,17 @@ import { useIntersectionObserver } from '@vueuse/core'
 import { Loader2 } from 'lucide-vue-next'
 import gsap from 'gsap'
 
+const MAX_STAGGER_ITEMS = 12
+const STAGGER_DELAY = 0.1
+
 const loadMoreRef = ref<HTMLElement | null>(null)
 
 const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
   queryKey: ['cards'],
   queryFn: ({ pageParam = 1 }) =>
-    CardsService.getCards({ page: pageParam as number, rpp: 12 }).then((res) => res.data),
+    CardsService.getCards({ page: pageParam as number, rpp: MAX_STAGGER_ITEMS }).then(
+      (res) => res.data,
+    ),
   initialPageParam: 1,
   getNextPageParam: (lastPage) => (lastPage.more ? lastPage.page + 1 : undefined),
 })
@@ -45,7 +50,7 @@ const onEnter = (el: Element, done: () => void) => {
     opacity: 1,
     y: 0,
     duration: 0.5,
-    delay: (index % 12) * 0.1,
+    delay: (index % MAX_STAGGER_ITEMS) * STAGGER_DELAY,
     ease: 'power2.out',
     onComplete: done,
   })

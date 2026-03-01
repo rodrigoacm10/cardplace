@@ -36,13 +36,13 @@ export interface GetTradesParams {
   page?: number
 }
 
-export interface CreateTradeData {
+export interface TradePayload {
   cards: { cardId: string; type: 'OFFERING' | 'RECEIVING' }[]
 }
 
 export const TradeService = {
-  async createTrade(data: CreateTradeData) {
-    return api.post('/trades', data)
+  async createTrade(data: TradePayload) {
+    return api.post<Trade>('/trades', data)
   },
   async getTrades(params: GetTradesParams = { rpp: 10, page: 1 }) {
     return api.get<TradeResponse>('/trades', { params })

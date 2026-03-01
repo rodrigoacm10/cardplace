@@ -5,6 +5,9 @@ import CardContainer from '@/components/CardContainer.vue'
 import { Library } from 'lucide-vue-next'
 import gsap from 'gsap'
 
+const MAX_STAGGER_ITEMS = 12
+const STAGGER_DELAY = 0.1
+
 const {
   data: cards,
   isLoading,
@@ -29,7 +32,7 @@ const onEnter = (el: Element, done: () => void) => {
     opacity: 1,
     y: 0,
     duration: 0.5,
-    delay: (index % 12) * 0.1,
+    delay: (index % MAX_STAGGER_ITEMS) * STAGGER_DELAY,
     ease: 'power2.out',
     onComplete: done,
   })
