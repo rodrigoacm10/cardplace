@@ -27,11 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userInitials = computed(() => {
     if (!user.value?.name) return ''
-    const names = user.value.name.split(' ')
-    if (names.length >= 2) {
-      // return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase()
-      return user.value.name.substring(0, 2).toUpperCase()
-    }
+
     return user.value.name.substring(0, 2).toUpperCase()
   })
 

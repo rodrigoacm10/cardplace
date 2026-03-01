@@ -176,7 +176,6 @@ const cardStyle = computed(() => {
 <template>
   <div
     class="relative w-full h-full z-10 transition-all duration-300"
-    :class="{ 'z-50': isHovered || showTooltip }"
     style="perspective: 1000px"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"

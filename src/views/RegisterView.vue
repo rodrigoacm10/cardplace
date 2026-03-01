@@ -3,8 +3,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -20,28 +18,15 @@ import {
 } from '@/components/ui/card'
 
 import { toast } from 'vue-sonner'
+import { registerSchema } from '@/schemas/registerSchema'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const isLoading = ref(false)
 const showPassword = ref(false)
 
-const formSchema = toTypedSchema(
-  z
-    .object({
-      name: z.string().min(2, { message: 'O nome deve ter pelo menos 2 caracteres' }),
-      email: z.string().email({ message: 'E-mail inválido' }),
-      password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
-      confirmPassword: z.string().min(6, { message: 'Confirme sua senha' }),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: 'As senhas não coincidem',
-      path: ['confirmPassword'],
-    }),
-)
-
 const form = useForm({
-  validationSchema: formSchema,
+  validationSchema: registerSchema,
 })
 
 const onSubmit = form.handleSubmit(async (values) => {

@@ -3,8 +3,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -21,6 +19,7 @@ import {
 } from '@/components/ui/card'
 
 import { toast } from 'vue-sonner'
+import { loginSchema } from '@/schemas/loginSchema'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -28,15 +27,8 @@ const isLoading = ref(false)
 const rememberMe = ref(false)
 const showPassword = ref(false)
 
-const formSchema = toTypedSchema(
-  z.object({
-    email: z.string().email({ message: 'E-mail inválido' }),
-    password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
-  }),
-)
-
 const form = useForm({
-  validationSchema: formSchema,
+  validationSchema: loginSchema,
 })
 
 const onSubmit = form.handleSubmit(async (values) => {

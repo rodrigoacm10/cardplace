@@ -104,9 +104,7 @@ onMounted(() => {
 
         <div ref="cardInfoRef" class="space-y-8">
           <div>
-            <h1
-              class="text-3xl md:text-5xl font-black text-zinc-900 leading-tight mb-4 tracking-tight"
-            >
+            <h1 class="text-3xl font-black text-zinc-900 leading-tight mb-4 tracking-tight">
               {{ card.name }}
             </h1>
             <div class="flex items-center gap-4 text-zinc-500">
@@ -128,14 +126,14 @@ onMounted(() => {
             <h3 class="text-xs font-black uppercase tracking-[0.2em] text-[#169366] mb-4">
               Descrição da Habilidade
             </h3>
-            <p class="text-zinc-600 md:text-lg leading-relaxed font-medium">
+            <p class="text-zinc-600 md:text-l leading-relaxed font-medium">
               {{ card.description }}
             </p>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <Button
-              class="w-full h-12 md:h-16 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white rounded-2xl text-lg font-bold shadow-xl shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
+              class="w-full h-12 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white rounded-2xl text-lg font-bold shadow-xl shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
               @click="router.push({ path: '/trade', query: { receivingId: card.id } })"
             >
               <ArrowLeftRight
