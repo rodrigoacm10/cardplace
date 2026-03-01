@@ -1,48 +1,98 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import AppSidebar from '@/components/AppSidebar.vue'
-import { LayoutDashboard } from 'lucide-vue-next'
+import { Search, ArrowLeftRight, Library, Menu } from 'lucide-vue-next'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
+
+const isMobileMenuOpen = ref(false)
+
+const navLinks = [
+  { to: '/cards', label: 'Marketplace', icon: Search },
+  { to: '/trades', label: 'Trocas', icon: ArrowLeftRight },
+  { to: '/collection', label: 'Coleção', icon: Library },
+]
 </script>
 
 <template>
   <SidebarProvider>
     <AppSidebar />
 
-    <main class="w-full flex flex-col min-h-screen text-white">
-      <header class="sticky top-0 z-50 bg-[#ffffff] flex justify-between items-center py-4 px-8">
+    <main class="w-full flex flex-col min-h-screen">
+      <header
+        class="sticky top-0 z-50 bg-white border-b border-zinc-100 flex justify-between items-center py-4 px-6 lg:px-10 h-18"
+      >
         <div class="flex items-center gap-4">
-          <SidebarTrigger class="text-[#169366] hover:text-[#128159] cursor-pointer" />
-          <div>
-            <h1 class="text-[#169366] text-xl font-bold">CardPlace</h1>
+          <SidebarTrigger class="text-[#169366] hover:bg-[#169366]/5 cursor-pointer" />
+          <div class="flex items-center gap-2">
+            <h1 class="text-[#169366] text-xl font-black tracking-tight">CardPlace</h1>
           </div>
         </div>
 
-        <div class="text-[#4e4e4d] font-semibold flex items-center space-x-2">
-          <router-link to="/cards" class="flex items-center">
-            <LayoutDashboard class="w-4 h-4 mr-2" />
-            <span>Marketplace</span>
-          </router-link>
+        <nav class="hidden sm:flex items-center bg-zinc-50 border border-zinc-100 p-1 rounded-2xl">
+          <Button
+            v-for="link in navLinks"
+            :key="link.to"
+            as-child
+            variant="ghost"
+            size="sm"
+            class="rounded-xl font-bold transition-all text-zinc-500 hover:text-zinc-900"
+          >
+            <router-link :to="link.to" active-class="bg-white shadow-xs !text-[#169366]">
+              <component :is="link.icon" class="w-4 h-4 mr-2" />
+              <span>{{ link.label }}</span>
+            </router-link>
+          </Button>
+        </nav>
 
-          <div class="bg-[#4e4e4d] w-0.5 h-6"></div>
-
-          <router-link to="/trades" class="flex items-center">
-            <LayoutDashboard class="w-4 h-4 mr-2" />
-            <span>Trades</span>
-          </router-link>
-
-          <div class="bg-[#4e4e4d] w-0.5 h-6"></div>
-
-          <router-link to="/collection" class="flex items-center">
-            <LayoutDashboard class="w-4 h-4 mr-2" />
-            <span>Collection</span>
-          </router-link>
-        </div>
+        <Sheet v-model:open="isMobileMenuOpen">
+          <SheetTrigger as-child>
+            <Button
+              variant="outline"
+              size="icon"
+              class="sm:hidden rounded-xl bg-zinc-50 border-zinc-100 text-zinc-600 active:scale-95 transition-transform"
+            >
+              <Menu class="w-5 h-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="top" class="p-6">
+            <SheetHeader class="mb-4">
+              <SheetTitle class="text-[#169366] text-xl font-black">Navegação</SheetTitle>
+            </SheetHeader>
+            <div class="flex flex-row overflow-x-auto gap-3 pb-2 scrollbar-none">
+              <Button
+                v-for="link in navLinks"
+                :key="link.to"
+                as-child
+                variant="ghost"
+                @click="isMobileMenuOpen = false"
+                class="rounded-2xl font-bold transition-all whitespace-nowrap bg-zinc-50 text-zinc-500 border border-zinc-100 flex items-center justify-center p-6 h-auto"
+              >
+                <router-link
+                  :to="link.to"
+                  active-class="!bg-[#169366]/5 !text-[#169366] !border-[#169366]/20"
+                >
+                  <component :is="link.icon" class="w-5 h-5 mr-2" />
+                  <span>{{ link.label }}</span>
+                </router-link>
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
       </header>
 
-      <!-- p-8 -->
       <div class="flex-1 bg-[#eaeaea]">
-        <div class="max-w-6xl mx-auto overflow-hidden">
-          <router-view />
+        <div class="max-w-7xl mx-auto overflow-hidden">
+          <router-view v-slot="{ Component }">
+            <Transition
+              enter-active-class="transition duration-300 ease-out"
+              enter-from-class="opacity-0 translate-y-4"
+              enter-to-class="opacity-100 translate-y-0"
+            >
+              <component :is="Component" />
+            </Transition>
+          </router-view>
         </div>
       </div>
     </main>
