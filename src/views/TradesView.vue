@@ -1,26 +1,44 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { TradeService, type Trade } from '@/services/trade.service'
 import { ArrowRight, History, User, Calendar, Trash2, Loader2 } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import TradeDetailsDialog from '@/components/TradeDetailsDialog.vue'
+import { useIntersectionObserver } from '@vueuse/core'
 import { toast } from 'vue-sonner'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { Button } from '@/components/ui/button'
+import TradeDetailsDialog from '@/components/TradeDetailsDialog.vue'
 import TradeDeleteDialog from '@/components/TradeDeleteDialog.vue'
+
+const loadMoreRef = ref<HTMLElement | null>(null)
 
 const {
   data: tradesData,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
   isLoading,
   isError,
-} = useQuery({
+} = useInfiniteQuery({
   queryKey: ['trades'],
-  queryFn: () => TradeService.getTrades().then((res) => res.data),
+  queryFn: ({ pageParam = 1 }) =>
+    TradeService.getTrades({ page: pageParam as number, rpp: 10 }).then((res) => res.data),
+  initialPageParam: 1,
+  getNextPageParam: (lastPage) => (lastPage.more ? lastPage.page + 1 : undefined),
 })
 
-const trades = computed(() => tradesData.value?.list || [])
+const trades = computed(() => tradesData.value?.pages.flatMap((page) => page.list) || [])
+
+useIntersectionObserver(
+  loadMoreRef,
+  (entries) => {
+    const isIntersecting = entries[0]?.isIntersecting
+    if (isIntersecting && hasNextPage.value && !isFetchingNextPage.value) {
+      fetchNextPage()
+    }
+  },
+  { threshold: 0.1 },
+)
 
 const getOfferingCards = (trade: Trade) => {
   return trade.tradeCards.filter((tc) => tc.type === 'OFFERING')
@@ -47,7 +65,6 @@ const openDetails = (trade: Trade) => {
   isDetailsOpen.value = true
 }
 
-// Delete Logic
 const isDeleteDialogOpen = ref(false)
 const tradeToDelete = ref<string | null>(null)
 
@@ -87,26 +104,38 @@ const handleDelete = () => {
         </div>
       </header>
 
-      <div v-if="isLoading" class="grid gap-6">
+      <div v-if="isLoading && trades.length === 0" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div
-          v-for="i in 3"
+          v-for="i in 4"
           :key="i"
           class="bg-white border border-zinc-200 rounded-3xl p-6 animate-pulse"
         >
-          <div class="h-6 w-48 bg-zinc-100 rounded mb-4"></div>
-          <div class="flex items-center gap-8">
-            <div class="w-32 h-44 bg-zinc-100 rounded-xl"></div>
-            <div class="w-8 h-8 bg-zinc-100 rounded-full"></div>
-            <div class="w-32 h-44 bg-zinc-100 rounded-xl"></div>
+          <div class="flex justify-between mb-8">
+            <div class="h-6 w-48 bg-zinc-100 rounded-full"></div>
+            <div class="h-6 w-8 bg-zinc-100 rounded-lg"></div>
+          </div>
+          <div class="flex items-center justify-center gap-10">
+            <div class="w-24 h-36 bg-zinc-100 rounded-2xl"></div>
+            <div class="w-8 h-0.5 bg-zinc-100 rounded-full"></div>
+            <div class="w-24 h-36 bg-zinc-100 rounded-2xl"></div>
           </div>
         </div>
       </div>
 
-      <div v-else-if="isError" class="bg-red-50 border border-red-100 p-8 rounded-3xl text-center">
-        <p class="text-red-600 font-medium">Ocorreu um erro ao carregar as trocas.</p>
+      <div
+        v-else-if="isError && trades.length === 0"
+        class="bg-red-50/50 border border-red-100 p-12 rounded-4xl text-center flex flex-col items-center"
+      >
+        <div
+          class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600"
+        >
+          <History class="w-8 h-8" />
+        </div>
+        <p class="text-red-600 font-bold text-lg">Erro ao carregar trocas</p>
+        <p class="text-red-500/70 text-sm mt-1">Não foi possível sincronizar seu histórico.</p>
         <button
           @click="() => queryClient.invalidateQueries({ queryKey: ['trades'] })"
-          class="mt-4 text-sm font-bold text-red-700 underline"
+          class="mt-6 px-6 py-2 bg-red-600 text-white rounded-full text-sm font-bold shadow-md hover:bg-red-700 transition-colors"
         >
           Tentar novamente
         </button>
@@ -132,7 +161,7 @@ const handleDelete = () => {
           v-for="trade in trades"
           :key="trade.id"
           @click="openDetails(trade)"
-          class="bg-white border border-zinc-200 rounded-3xl p-6 hover:shadow-xl hover:border-[#169366]/30 transition-all group cursor-pointer"
+          class="bg-white border border-zinc-100 rounded-4xl p-8 hover:shadow-2xl hover:border-[#169366]/20 transition-all group cursor-pointer relative overflow-hidden active:scale-[0.98]"
         >
           <div
             class="flex flex-wrap justify-between items-start gap-4 mb-6 pb-4 border-b border-zinc-100"
@@ -212,15 +241,39 @@ const handleDelete = () => {
           </div>
         </div>
       </div>
+
+      <div
+        ref="loadMoreRef"
+        class="flex flex-col items-center justify-center mt-20 py-10 transition-all h-32"
+        :class="{ 'opacity-0': !hasNextPage && !isFetchingNextPage }"
+      >
+        <div v-if="isFetchingNextPage" class="flex flex-col items-center gap-4">
+          <div class="relative">
+            <div
+              class="w-10 h-10 rounded-full border-4 border-zinc-100 border-t-[#169366] animate-spin"
+            ></div>
+          </div>
+          <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest"
+            >Sincronizando Histórico</span
+          >
+        </div>
+
+        <div v-else-if="!hasNextPage && trades.length > 0" class="flex flex-col items-center gap-2">
+          <div class="w-8 h-0.5 bg-zinc-100 rounded-full mb-4"></div>
+          <span class="text-[10px] font-black text-zinc-300 uppercase tracking-[0.3em]"
+            >Histórico completo</span
+          >
+        </div>
+      </div>
     </div>
-
-    <TradeDetailsDialog v-model:isOpen="isDetailsOpen" :trade="selectedTrade" />
-
-    <TradeDeleteDialog
-      v-model:isOpen="isDeleteDialogOpen"
-      :tradeId="tradeToDelete"
-      :isPending="deleteMutation.isPending.value"
-      @delete="handleDelete"
-    />
   </div>
+
+  <TradeDetailsDialog v-model:isOpen="isDetailsOpen" :trade="selectedTrade" />
+
+  <TradeDeleteDialog
+    v-model:isOpen="isDeleteDialogOpen"
+    :tradeId="tradeToDelete"
+    :isPending="deleteMutation.isPending.value"
+    @delete="handleDelete"
+  />
 </template>

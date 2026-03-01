@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useInfiniteQuery } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
-import { Button } from '@/components/ui/button'
 import CardContainer from '@/components/CardContainer.vue'
+import { useIntersectionObserver } from '@vueuse/core'
+import { Loader2 } from 'lucide-vue-next'
 import gsap from 'gsap'
+
+const loadMoreRef = ref<HTMLElement | null>(null)
 
 const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
   queryKey: ['cards'],
@@ -15,6 +18,17 @@ const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useI
 })
 
 const allCards = computed(() => data.value?.pages.flatMap((page) => page.list) || [])
+
+useIntersectionObserver(
+  loadMoreRef,
+  (entries) => {
+    const isIntersecting = entries[0]?.isIntersecting
+    if (isIntersecting && hasNextPage.value && !isFetchingNextPage.value) {
+      fetchNextPage()
+    }
+  },
+  { threshold: 0.1 },
+)
 
 const onBeforeEnter = (el: Element) => {
   gsap.set(el, {
@@ -31,7 +45,7 @@ const onEnter = (el: Element, done: () => void) => {
     opacity: 1,
     y: 0,
     duration: 0.5,
-    delay: index * 0.1,
+    delay: (index % 12) * 0.1,
     ease: 'power2.out',
     onComplete: done,
   })
@@ -41,11 +55,11 @@ const onEnter = (el: Element, done: () => void) => {
 <template>
   <div class="min-h-screen text-black p-8">
     <div class="max-w-6xl mx-auto">
-      <header class="flex justify-between items-center mb-8">
+      <header class="flex justify-between items-center mb-12">
         <div>
-          <h1 class="text-[#128159] text-3xl font-bold">Marketplace</h1>
+          <h1 class="text-[#128159] text-4xl font-black tracking-tight mb-2">Marketplace</h1>
           <p class="text-zinc-500 font-medium">
-            Veja todos os cards disponíveis para troca e compra
+            Explore e colecione os cards mais raros e poderosos
           </p>
         </div>
       </header>
@@ -53,12 +67,12 @@ const onEnter = (el: Element, done: () => void) => {
       <div>
         <div
           v-if="isLoading && allCards.length === 0"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
         >
           <div
             v-for="i in 8"
             :key="i"
-            class="aspect-[472/687] rounded-xl bg-zinc-200 animate-pulse"
+            class="aspect-[472/687] rounded-3xl bg-zinc-100 animate-pulse border border-zinc-200"
           ></div>
         </div>
 
@@ -66,7 +80,7 @@ const onEnter = (el: Element, done: () => void) => {
           <transition-group
             appear
             tag="div"
-            class="grid w-[calc(100%-6rem)] sm:w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            class="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
             @before-enter="onBeforeEnter"
             @enter="onEnter"
             :css="false"
@@ -75,23 +89,52 @@ const onEnter = (el: Element, done: () => void) => {
               v-for="(card, index) in allCards"
               :key="card.id"
               :card="card"
-              :data-index="index % 12"
+              :data-index="index"
             />
           </transition-group>
         </div>
 
-        <div v-if="hasNextPage" class="flex justify-center mt-12">
-          <Button
-            @click="fetchNextPage()"
-            :disabled="isFetchingNextPage"
-            class="bg-[#169366] text-white hover:bg-[#128159] px-8"
+        <div
+          ref="loadMoreRef"
+          class="flex flex-col items-center justify-center mt-20 py-10 transition-all"
+          :class="{ 'opacity-0 h-0': !hasNextPage && !isFetchingNextPage }"
+        >
+          <div v-if="isFetchingNextPage" class="flex flex-col items-center gap-4">
+            <div class="relative">
+              <div
+                class="w-12 h-12 rounded-full border-4 border-zinc-100 border-t-[#169366] animate-spin"
+              ></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-2 h-2 bg-[#169366] rounded-full animate-ping"></div>
+              </div>
+            </div>
+            <span class="text-sm font-bold text-zinc-400 uppercase tracking-widest"
+              >Buscando mais cards</span
+            >
+          </div>
+
+          <div
+            v-else-if="!hasNextPage && allCards.length > 0"
+            class="flex flex-col items-center gap-2"
           >
-            {{ isFetchingNextPage ? 'Carregando...' : 'Carregar mais' }}
-          </Button>
+            <div class="w-12 h-0.5 bg-zinc-100 rounded-full mb-4"></div>
+            <span class="text-xs font-black text-zinc-300 uppercase tracking-[0.3em]"
+              >Você chegou ao fim</span
+            >
+          </div>
         </div>
 
-        <div v-if="!isLoading && allCards.length === 0" class="text-center py-12 text-zinc-500">
-          Nenhuma carta disponível no marketplace no momento.
+        <div
+          v-if="!isLoading && allCards.length === 0"
+          class="text-center py-32 flex flex-col items-center"
+        >
+          <div
+            class="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 text-zinc-200 border border-zinc-100"
+          >
+            <Library class="w-10 h-10" />
+          </div>
+          <h2 class="text-xl font-bold text-zinc-900">Nenhum card encontrado</h2>
+          <p class="text-zinc-500 mt-2">Parece que ainda não temos cards no marketplace.</p>
         </div>
       </div>
     </div>
