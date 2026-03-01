@@ -7,6 +7,7 @@ import { ChevronLeft, Calendar, Info, Loader2, ArrowLeftRight } from 'lucide-vue
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
+import CardImage3D from '@/components/global/CardImage3D.vue'
 
 import { useCardDetailsAnimation } from '@/composables/useCardDetailsAnimation'
 
@@ -76,15 +77,12 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
         v-else-if="card"
         class="px-6 sm:px-20 lg:p-0 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
       >
-        <div ref="cardImageRef" class="relative group perspective-1000">
-          <div
-            class="aspect-472/687 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] transition-transform duration-700 group-hover:rotate-y-12 group-hover:rotate-x-6"
-          >
-            <img :src="card.imageUrl" :alt="card.name" class="w-full h-full object-cover" />
-            <div
-              class="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
-            ></div>
-          </div>
+        <div ref="cardImageRef" class="relative group aspect-472/687">
+          <CardImage3D
+            :image-url="card.imageUrl"
+            :alt="card.name"
+            class="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] rounded-3xl"
+          />
         </div>
 
         <div ref="cardInfoRef" class="space-y-8">

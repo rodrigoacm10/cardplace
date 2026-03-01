@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { CollectionService } from '@/services/collection.service'
 import { Check, ArrowLeftRight } from 'lucide-vue-next'
 import { useWindowSize } from '@vueuse/core'
+import CardImage3D from '@/components/global/CardImage3D.vue'
 
 interface Card {
   id: string
@@ -49,8 +50,6 @@ const handleImageError = (event: Event) => {
 }
 
 const cardRef = ref<HTMLElement | null>(null)
-const rotateX = ref(0)
-const rotateY = ref(0)
 const isHovered = ref(false)
 
 const showTooltip = ref(false)
@@ -101,19 +100,6 @@ onUnmounted(() => {
   if (hideTimeout) clearTimeout(hideTimeout)
 })
 
-const handleMouseMove = (e: MouseEvent) => {
-  if (!cardRef.value) return
-  const rect = cardRef.value.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
-  const centerX = rect.width / 2
-  const centerY = rect.height / 2
-  const maxRotation = 15
-
-  rotateX.value = ((centerY - y) / centerY) * maxRotation
-  rotateY.value = ((x - centerX) / centerX) * maxRotation
-}
-
 const handleMouseEnter = () => {
   isHovered.value = true
 
@@ -127,8 +113,6 @@ const handleMouseEnter = () => {
 
 const handleMouseLeave = () => {
   isHovered.value = false
-  rotateX.value = 0
-  rotateY.value = 0
 
   if (showTimeout) clearTimeout(showTimeout)
 
@@ -158,49 +142,28 @@ const handleTooltipMouseLeave = () => {
 const handleClose = () => {
   showTooltip.value = false
 }
-
-const cardStyle = computed(() => {
-  if (!isHovered.value) {
-    return {
-      transform: 'rotateX(0deg) rotateY(0deg)',
-      transition: 'transform 0.5s ease-out',
-    }
-  }
-  return {
-    transform: `rotateX(${rotateX.value}deg) rotateY(${rotateY.value}deg)`,
-    transition: 'none',
-  }
-})
 </script>
 
 <template>
   <div
     class="relative w-full h-full z-10 transition-all duration-300"
-    style="perspective: 1000px"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
     <div
       ref="cardRef"
-      class="relative bg-zinc-900 overflow-hidde shadow-sm flex flex-col transform-style-3d will-change-transform cursor-pointer"
-      :class="{ 'shadow-2xl': isHovered }"
-      :style="cardStyle"
-      @mousemove="handleMouseMove"
+      class="relative cursor-pointer transition-shadow duration-300"
+      :class="{ 'shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]': isHovered }"
     >
-      <img
-        :src="card.imageUrl"
-        :alt="card.name"
-        class="object-cover w-full h-full aspect-[472/687]"
-        @error="handleImageError"
-      />
-
-      <div
-        v-if="isInCollection && !hideTrade"
-        class="absolute -top-3 -right-3 font-bold bg-[#169366] text-white px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 shadow-lg border border-[#ffffff] border-2 uppercase tracking-wider backdrop-blur-sm"
-      >
-        <Check class="w-3 h-3" />
-        Já possui
-      </div>
+      <CardImage3D :image-url="card.imageUrl" :alt="card.name" class="rounded-[inherit]">
+        <div
+          v-if="isInCollection && !hideTrade"
+          class="absolute -top-3 -right-3 font-bold bg-[#169366] text-white px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 shadow-lg border border-[#ffffff] border-2 uppercase tracking-wider backdrop-blur-sm z-20"
+        >
+          <Check class="w-3 h-3" />
+          Já possui
+        </div>
+      </CardImage3D>
     </div>
 
     <Teleport to="body">

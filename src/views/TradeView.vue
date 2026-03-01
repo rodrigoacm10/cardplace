@@ -3,6 +3,7 @@ import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftRight, ChevronLeft, Plus } from 'lucide-vue-next'
 import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
+import CardImage3D from '@/components/global/CardImage3D.vue'
 
 import { useTradeAnimation } from '@/composables/useTradeAnimation'
 import { useTradeState } from '@/composables/useTradeState'
@@ -92,11 +93,12 @@ const handleTrade = () => {
                   opacity: 1 - (index as number) * 0.1,
                 }"
               >
-                <div
-                  class="w-full h-full border border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl"
-                >
-                  <img :src="card.imageUrl" class="w-full h-full object-cover" />
-                </div>
+                <CardImage3D
+                  :image-url="card.imageUrl"
+                  :alt="card.name"
+                  :disable3d="true"
+                  class="rounded-[inherit]"
+                />
               </div>
 
               <div
@@ -156,13 +158,17 @@ const handleTrade = () => {
         <span class="text-zinc-500 font-bold uppercase tracking-wider text-sm">Você Recebe</span>
 
         <div
-          class="w-full aspect-472/687 max-w-[300px] flex items-center justify-center overflow-hidden shadow-2xl"
+          class="w-full aspect-472/687 max-w-[300px] flex items-center justify-center overflow-visible"
         >
           <template v-if="isLoadingReceiving">
-            <div class="w-full h-full animate-pulse bg-zinc-800"></div>
+            <div class="w-full h-full animate-pulse bg-zinc-800 rounded-2xl"></div>
           </template>
           <template v-else-if="receivingCard">
-            <img :src="receivingCard.imageUrl" class="w-full h-full object-cover" />
+            <CardImage3D
+              :image-url="receivingCard.imageUrl"
+              :alt="receivingCard.name"
+              class="rounded-2xl"
+            />
           </template>
           <template v-else>
             <span class="text-zinc-500">Card não encontrado</span>
