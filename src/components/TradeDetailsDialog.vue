@@ -36,7 +36,6 @@ const getReceivingCard = (trade: Trade) => {
       </DialogHeader>
 
       <div class="grow overflow-y-auto p-8 flex flex-col items-center gap-10">
-        <!-- Offering Section (First Line) -->
         <div class="w-full flex flex-col gap-6">
           <div class="flex items-center justify-between px-2">
             <span class="text-xs font-black uppercase tracking-[0.2em] text-zinc-400"

@@ -129,7 +129,6 @@ const handleAddCards = () => {
                     alt=""
                     @error="'https://via.placeholder.com/30x40'"
                   />
-                  <!-- @error="$event.target.src = 'https://via.placeholder.com/30x40'" -->
 
                   <span class="font-medium">{{ card.name }}</span>
                 </div>

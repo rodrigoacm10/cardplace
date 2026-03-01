@@ -1,96 +1,45 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { CardsService } from '@/services/cards.service'
-import { CollectionService } from '@/services/collection.service'
-import { TradeService, type TradePayload } from '@/services/trade.service'
-import { type Card } from '@/stores/auth'
-import { ArrowLeftRight, ChevronLeft, Check, Plus } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { ArrowLeftRight, ChevronLeft, Plus } from 'lucide-vue-next'
 import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
-import gsap from 'gsap'
+
+import { useTradeAnimation } from '@/composables/useTradeAnimation'
+import { useTradeState } from '@/composables/useTradeState'
 
 const route = useRoute()
 const router = useRouter()
-const queryClient = useQueryClient()
 
-const shockwaveRef = ref(null)
-const offeringRef = ref(null)
-const receivingRef = ref(null)
-const centralButtonRef = ref(null)
+const shockwaveRef = ref<HTMLElement | null>(null)
+const offeringRef = ref<HTMLElement | null>(null)
+const receivingRef = ref<HTMLElement | null>(null)
+const centralButtonRef = ref<HTMLElement | null>(null)
 
 const receivingId = computed(() => route.query.receivingId as string)
 
-const { data: receivingCard, isLoading: isLoadingReceiving } = useQuery({
-  queryKey: ['card', receivingId],
-  queryFn: () => CardsService.getCardById(receivingId.value).then((res) => res.data),
-  enabled: computed(() => !!receivingId.value),
-})
+const {
+  receivingCard,
+  isLoadingReceiving,
+  myCards,
+  offeringCardIds,
+  offeringCards,
+  isChoosingCard,
+  isTrading,
+  toggleCardSelection,
+  performTradeMutation,
+} = useTradeState(receivingId)
 
-const { data: myCollection, isLoading: isLoadingCollection } = useQuery({
-  queryKey: ['my-collection'],
-  queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
-})
+const { playTradeAnimation } = useTradeAnimation()
 
-const myCards = computed(() => myCollection.value?.cards || [])
-
-const offeringCardIds = ref<string[]>([])
-const offeringCards = computed(() =>
-  myCards.value.filter((c: Card) => offeringCardIds.value.includes(c.id)),
-)
-
-const isChoosingCard = ref(false)
-const isTrading = ref(false)
-
-const tradeMutation = useMutation({
-  mutationFn: (data: TradePayload) => TradeService.createTrade(data),
-  onSuccess: async () => {
-    isTrading.value = true
-    toast.success('Troca realizada com sucesso!')
-    queryClient.invalidateQueries({ queryKey: ['collection'] })
-
-    await nextTick()
-
-    const tl = gsap.timeline()
-    const isMobile = window.innerWidth < 768
-
-    tl.to(centralButtonRef.value, {
-      scale: 0,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'back.in',
-    })
-
-    if (shockwaveRef.value) {
-      tl.fromTo(
-        shockwaveRef.value,
-        { scale: 0.5, opacity: 1, borderWidth: '10px' },
-        {
-          scale: 60,
-          opacity: 0,
-          borderWidth: '1px',
-          duration: 2,
-          ease: 'power2.out',
-        },
-        0,
-      )
-    }
-
-    if (isMobile) {
-      tl.to(offeringRef.value, { x: '150vw', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-      tl.to(receivingRef.value, { x: '-150vw', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-    } else {
-      tl.to(offeringRef.value, { y: '-150vh', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-      tl.to(receivingRef.value, { y: '150vh', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-    }
-
-    await tl.play()
-    router.push('/cards')
-  },
-  onError: () => {
-    toast.error('Ocorreu um erro ao realizar a troca.')
-  },
+const tradeMutation = performTradeMutation(async () => {
+  await nextTick()
+  await playTradeAnimation({
+    centralButton: centralButtonRef.value,
+    shockwave: shockwaveRef.value,
+    offering: offeringRef.value,
+    receiving: receivingRef.value,
+  })
+  router.push('/cards')
 })
 
 const handleTrade = () => {
@@ -104,15 +53,6 @@ const handleTrade = () => {
   tradeMutation.mutate({
     cards: [...offeringEntries, { cardId: receivingId.value, type: 'RECEIVING' }],
   })
-}
-
-const toggleCardSelection = (id: string) => {
-  const index = offeringCardIds.value.indexOf(id)
-  if (index > -1) {
-    offeringCardIds.value.splice(index, 1)
-  } else {
-    offeringCardIds.value.push(id)
-  }
 }
 </script>
 
