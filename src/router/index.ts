@@ -6,6 +6,7 @@ import CardsView from '../views/CardsView.vue'
 import TradeView from '../views/TradeView.vue'
 import TradesView from '../views/TradesView.vue'
 import CardDetailsView from '../views/CardDetailsView.vue'
+import CollectionView from '../views/CollectionView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
 
 const router = createRouter({
@@ -52,6 +53,11 @@ const router = createRouter({
           path: 'cards/:id',
           name: 'card-details',
           component: CardDetailsView,
+        },
+        {
+          path: 'collection',
+          name: 'collection',
+          component: CollectionView,
         },
         // Adicione outras páginas logadas aqui no futuro (ex: perfil, configurações)
       ],
