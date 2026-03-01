@@ -21,9 +21,9 @@ const navLinks = [
 
     <main class="w-full flex flex-col min-h-screen">
       <header
-        class="sticky top-0 z-50 bg-white border-b border-zinc-100 flex justify-between items-center py-4 px-6 lg:px-10 h-18"
+        class="sticky top-0 z-50 bg-white border-b border-zinc-100 flex justify-between items-center py-4 px-6 h-18"
       >
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-1">
           <SidebarTrigger class="text-[#169366] hover:bg-[#169366]/5 cursor-pointer" />
           <div class="flex items-center gap-2">
             <h1 class="text-[#169366] text-xl font-black tracking-tight">CardPlace</h1>
@@ -37,7 +37,7 @@ const navLinks = [
             as-child
             variant="ghost"
             size="sm"
-            class="rounded-xl font-bold transition-all text-zinc-500 hover:text-zinc-900"
+            class="rounded-xl font-bold transition-all text-zinc-500 hover:text-zinc-900 text-sm"
           >
             <router-link :to="link.to" active-class="bg-white shadow-xs !text-[#169366]">
               <component :is="link.icon" class="w-4 h-4 mr-2" />
