@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ArrowDown } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
 import type { Trade } from '@/services/trade.service'
 
 defineProps<{
@@ -9,6 +10,12 @@ defineProps<{
 }>()
 
 const emit = defineEmits(['update:isOpen'])
+const router = useRouter()
+
+const navigateToCard = (cardId: string) => {
+  emit('update:isOpen', false)
+  router.push(`/cards/${cardId}`)
+}
 
 const getOfferingCards = (trade: Trade) => {
   return trade.tradeCards.filter((tc) => tc.type === 'OFFERING')
@@ -47,7 +54,8 @@ const getReceivingCard = (trade: Trade) => {
               class="flex flex-col gap-2 w-24 sm:w-32"
             >
               <div
-                class="aspect-472/687 overflow-hidden border border-zinc-100 shadow-sm transition-transform hover:scale-105 active:scale-95"
+                @click="navigateToCard(tc.card.id)"
+                class="aspect-472/687 overflow-hidden border border-zinc-100 shadow-sm transition-transform hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <img :src="tc.card.imageUrl" class="w-full h-full object-cover" />
               </div>
@@ -76,7 +84,8 @@ const getReceivingCard = (trade: Trade) => {
 
           <div class="flex flex-col items-center gap-4 w-44 sm:w-56">
             <div
-              class="aspect-472/687 overflow-hidden shadow-2xl transition-transform hover:scale-105"
+              @click="navigateToCard(getReceivingCard(trade)!.card.id)"
+              class="aspect-472/687 overflow-hidden shadow-2xl transition-transform hover:scale-105 cursor-pointer"
             >
               <img
                 :src="getReceivingCard(trade)?.card?.imageUrl"
