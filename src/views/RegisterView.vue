@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useForm } from 'vee-validate'
-
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -17,36 +12,9 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { toast } from 'vue-sonner'
-import { registerSchema } from '@/schemas/registerSchema'
+import { useRegister } from '@/composables/useRegister'
 
-const router = useRouter()
-const authStore = useAuthStore()
-const isLoading = ref(false)
-const showPassword = ref(false)
-
-const form = useForm({
-  validationSchema: registerSchema,
-})
-
-const onSubmit = form.handleSubmit(async (values) => {
-  isLoading.value = true
-
-  const result = await authStore.register({
-    name: values.name,
-    email: values.email,
-    password: values.password,
-  })
-
-  isLoading.value = false
-
-  if (result.success) {
-    toast.success('Conta criada com sucesso! Faça login para continuar.')
-    router.push('/login')
-  } else {
-    toast.error(result.message)
-  }
-})
+const { isLoading, showPassword, onSubmit } = useRegister()
 </script>
 
 <template>
