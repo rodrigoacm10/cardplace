@@ -1,20 +1,21 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
-import { ChevronLeft, Calendar, Info, Sparkles, Loader2, ArrowLeftRight } from 'lucide-vue-next'
+import { ChevronLeft, Calendar, Info, Loader2, ArrowLeftRight } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
-import gsap from 'gsap'
-import { onMounted, ref } from 'vue'
+
+import { useCardDetailsAnimation } from '@/composables/useCardDetailsAnimation'
 
 const route = useRoute()
 const router = useRouter()
 const cardId = route.params.id as string
 
-const cardImageRef = ref(null)
-const cardInfoRef = ref(null)
+const cardImageRef = ref<HTMLElement | null>(null)
+const cardInfoRef = ref<HTMLElement | null>(null)
 
 const {
   data: card,
@@ -28,28 +29,12 @@ const {
 const formatDate = (dateString: string) => {
   try {
     return format(new Date(dateString), "d 'de' MMMM, yyyy", { locale: ptBR })
-  } catch (e) {
+  } catch {
     return dateString
   }
 }
 
-onMounted(() => {
-  if (cardImageRef.value && cardInfoRef.value) {
-    gsap.from(cardImageRef.value, {
-      x: -50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-    })
-    gsap.from(cardInfoRef.value, {
-      x: 50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-      delay: 0.2,
-    })
-  }
-})
+useCardDetailsAnimation(cardImageRef, cardInfoRef)
 </script>
 
 <template>
