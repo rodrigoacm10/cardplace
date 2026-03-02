@@ -9,6 +9,7 @@ import { CollectionService } from '@/services/collection.service'
 import { LogOut, Plus } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import AddCardsDialog from '@/components/cards/AddCardsDialog.vue'
+import TradeButton from '../global/TradeButton.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -90,13 +91,7 @@ const handleLogout = () => {
 
               <AddCardsDialog />
 
-              <Button
-                @click="router.push('/trade')"
-                class="mt-6 w-full max-w-[200px] bg-app-orange hover:bg-app-orange-dark text-white flex items-center gap-2"
-              >
-                <Plus class="w-4 h-4" />
-                Realizar Troca
-              </Button>
+              <TradeButton small />
             </div>
           </template>
 

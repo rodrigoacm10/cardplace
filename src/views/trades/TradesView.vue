@@ -7,6 +7,7 @@ import { useTradesState } from '@/composables/trades/useTradesState'
 import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'vue-router'
+import TradeButton from '@/components/global/TradeButton.vue'
 
 const loadMoreRef = ref<HTMLElement | null>(null)
 const authStore = useAuthStore()
@@ -45,15 +46,9 @@ const {
       </header>
 
       <div class="flex justify-end mb-6">
-        <Button
-          class="w-[320px] h-12 px-10 bg-app-orange hover:bg-app-orange-dark text-white text-lg font-bold shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
-          @click="router.push('/trade')"
-        >
-          <ArrowLeftRight
-            class="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500"
-          />
-          Trocar
-        </Button>
+        <div class="w-full sm:w-[320px]">
+          <TradeButton />
+        </div>
       </div>
 
       <div v-if="isLoading && trades.length === 0" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
