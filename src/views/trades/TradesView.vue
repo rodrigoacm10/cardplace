@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ArrowRight, History, User, Calendar, Trash2 } from 'lucide-vue-next'
-import TradeDetailsDialog from '@/components/TradeDetailsDialog.vue'
-import TradeDeleteDialog from '@/components/TradeDeleteDialog.vue'
-import { useTradesState } from '@/composables/useTradesState'
+import TradeDetailsDialog from '@/components/trades/TradeDetailsDialog.vue'
+import TradeDeleteDialog from '@/components/trades/TradeDeleteDialog.vue'
+import { useTradesState } from '@/composables/trades/useTradesState'
 
 const loadMoreRef = ref<HTMLElement | null>(null)
 
@@ -33,7 +33,7 @@ const {
     <div class="max-w-6xl mx-auto">
       <header class="flex justify-between items-center mb-8">
         <div>
-          <h1 class="text-[#128159] text-3xl font-bold">Histórico de Trocas</h1>
+          <h1 class="text-app-green-dark text-3xl font-bold">Histórico de Trocas</h1>
           <p class="text-zinc-500 font-medium">Acompanhe todas as negociações realizadas</p>
         </div>
       </header>
@@ -95,7 +95,7 @@ const {
           v-for="trade in trades"
           :key="trade.id"
           @click="openDetails(trade)"
-          class="bg-white border border-zinc-100 rounded-4xl p-8 hover:shadow-2xl hover:border-[#169366]/20 transition-all group cursor-pointer relative overflow-hidden active:scale-[0.98]"
+          class="bg-white border border-zinc-100 rounded-4xl p-8 hover:shadow-2xl hover:border-app-green/20 transition-all group cursor-pointer relative overflow-hidden active:scale-[0.98]"
         >
           <div
             class="flex flex-wrap justify-between items-start gap-4 mb-6 pb-4 border-b border-zinc-100"
@@ -154,7 +154,7 @@ const {
             </div>
 
             <div
-              class="flex items-center justify-center text-zinc-200 group-hover:text-[#169366] transition-colors"
+              class="flex items-center justify-center text-zinc-200 group-hover:text-app-green transition-colors"
             >
               <ArrowRight class="w-8 h-8 stroke-[3px]" />
             </div>
@@ -184,7 +184,7 @@ const {
         <div v-if="isFetchingNextPage" class="flex flex-col items-center gap-4">
           <div class="relative">
             <div
-              class="w-10 h-10 rounded-full border-4 border-zinc-100 border-t-[#169366] animate-spin"
+              class="w-10 h-10 rounded-full border-4 border-zinc-100 border-t-app-green animate-spin"
             ></div>
           </div>
           <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest"

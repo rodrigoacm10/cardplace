@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
+import { CollectionService } from '@/services/collection.service'
 import { Calendar, Info, Loader2, ArrowLeftRight } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
 import CardImage3D from '@/components/global/CardImage3D.vue'
 
-import { useCardDetailsAnimation } from '@/composables/useCardDetailsAnimation'
+import { useCardDetailsAnimation } from '@/composables/cards/useCardDetailsAnimation'
 import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
@@ -36,6 +37,15 @@ const formatDate = (dateString: string) => {
   }
 }
 
+const { data: myCollection } = useQuery({
+  queryKey: ['my-collection'],
+  queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
+})
+
+const isCardOwned = computed(() => {
+  return myCollection.value?.cards?.some((c: any) => c.id === cardId) || false
+})
+
 useCardDetailsAnimation(cardImageRef, cardInfoRef)
 </script>
 
@@ -54,13 +64,13 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
         <p class="text-zinc-500 mt-2 max-w-sm">
           Não conseguimos localizar as informações deste card. Verifique o ID ou tente novamente.
         </p>
-        <Button class="mt-8 bg-[#169366] hover:bg-[#128159]" @click="router.push('/cards')">
+        <Button class="mt-8 bg-app-green hover:bg-app-green-dark" @click="router.push('/cards')">
           Ir para o Marketplace
         </Button>
       </div>
 
       <div v-else-if="isLoading" class="flex flex-col items-center justify-center py-40">
-        <Loader2 class="w-12 h-12 text-[#169366] animate-spin" />
+        <Loader2 class="w-12 h-12 text-app-green animate-spin" />
         <p class="text-zinc-400 mt-4 font-medium">Carregando detalhes do card...</p>
       </div>
 
@@ -69,11 +79,7 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
         class="px-6 sm:px-20 lg:p-0 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
       >
         <div ref="cardImageRef" class="relative group aspect-472/687">
-          <CardImage3D
-            :image-url="card.imageUrl"
-            :alt="card.name"
-            class="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]"
-          />
+          <CardImage3D :image-url="card.imageUrl" :alt="card.name" />
         </div>
 
         <div ref="cardInfoRef" class="space-y-8">
@@ -97,7 +103,7 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
             <div class="absolute top-0 right-0 p-4 opacity-5">
               <Info class="w-24 h-24" />
             </div>
-            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-[#169366] mb-4">
+            <h3 class="text-xs font-black uppercase tracking-[0.2em] text-app-green mb-4">
               Descrição da Habilidade
             </h3>
             <p class="text-zinc-600 md:text-l leading-relaxed font-medium">
@@ -107,13 +113,15 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
 
           <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <Button
-              class="w-full h-12 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white rounded-2xl text-lg font-bold shadow-xl shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
+              class="w-full h-12 px-10 bg-app-orange hover:bg-app-orange-dark text-white text-lg font-bold shadow-orange-100 group transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100 disabled:hover:bg-app-orange"
               @click="router.push({ path: '/trade', query: { receivingId: card.id } })"
+              :disabled="isCardOwned"
             >
               <ArrowLeftRight
+                v-if="!isCardOwned"
                 class="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500"
               />
-              Trocar
+              {{ isCardOwned ? 'Já na Coleção' : 'Trocar' }}
             </Button>
           </div>
 

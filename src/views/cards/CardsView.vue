@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import CardContainer from '@/components/CardContainer.vue'
+import CardContainer from '@/components/cards/CardContainer.vue'
 import { Library } from 'lucide-vue-next'
 
-import { useCardsState } from '@/composables/useCardsState'
-import { useStaggerAnimation } from '@/composables/useStaggerAnimation'
+import { useCardsState } from '@/composables/cards/useCardsState'
+import { useStaggerAnimation } from '@/composables/core/useStaggerAnimation'
 
 const MAX_STAGGER_ITEMS = 12
 const STAGGER_DELAY = 0.1
@@ -24,7 +24,7 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGE
     <div class="max-w-6xl mx-auto">
       <header class="flex justify-between items-center mb-12">
         <div>
-          <h1 class="text-[#128159] text-4xl font-black tracking-tight mb-2">Marketplace</h1>
+          <h1 class="text-app-green-dark text-4xl font-black tracking-tight mb-2">Marketplace</h1>
           <p class="text-zinc-500 font-medium">
             Explore e colecione os cards mais raros e poderosos
           </p>
@@ -72,10 +72,10 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGE
           <div v-if="isFetchingNextPage" class="flex flex-col items-center gap-4">
             <div class="relative">
               <div
-                class="w-12 h-12 rounded-full border-4 border-zinc-100 border-t-[#169366] animate-spin"
+                class="w-12 h-12 rounded-full border-4 border-zinc-100 border-t-app-green animate-spin"
               ></div>
               <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-2 h-2 bg-[#169366] rounded-full animate-ping"></div>
+                <div class="w-2 h-2 bg-app-green rounded-full animate-ping"></div>
               </div>
             </div>
             <span class="text-sm font-bold text-zinc-400 uppercase tracking-widest"

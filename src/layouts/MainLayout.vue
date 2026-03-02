@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import AppSidebar from '@/components/AppSidebar.vue'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
 import { Search, ArrowLeftRight, Library, Menu } from 'lucide-vue-next'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
@@ -24,9 +24,9 @@ const navLinks = [
         class="sticky top-0 z-50 bg-white border-b border-zinc-100 flex justify-between items-center py-4 px-6 h-18"
       >
         <div class="flex items-center gap-1">
-          <SidebarTrigger class="text-[#169366] hover:bg-[#169366]/5 cursor-pointer" />
+          <SidebarTrigger class="text-app-green hover:bg-app-green/5 cursor-pointer" />
           <div class="flex items-center gap-2">
-            <h1 class="text-[#169366] text-xl font-black tracking-tight">CardPlace</h1>
+            <h1 class="text-app-green text-xl font-black tracking-tight">CardPlace</h1>
           </div>
         </div>
 
@@ -39,7 +39,7 @@ const navLinks = [
             size="sm"
             class="rounded-xl font-bold transition-all text-zinc-500 hover:text-zinc-900 text-sm"
           >
-            <router-link :to="link.to" active-class="bg-white shadow-xs !text-[#169366]">
+            <router-link :to="link.to" active-class="bg-white shadow-xs !text-app-green">
               <component :is="link.icon" class="w-4 h-4 mr-2" />
               <span>{{ link.label }}</span>
             </router-link>
@@ -58,7 +58,7 @@ const navLinks = [
           </SheetTrigger>
           <SheetContent side="top" class="p-6">
             <SheetHeader class="mb-4">
-              <SheetTitle class="text-[#169366] text-xl font-black">Navegação</SheetTitle>
+              <SheetTitle class="text-app-green text-xl font-black">Navegação</SheetTitle>
             </SheetHeader>
             <div class="flex flex-row overflow-x-auto gap-3 pb-2 scrollbar-none">
               <Button
@@ -71,7 +71,7 @@ const navLinks = [
               >
                 <router-link
                   :to="link.to"
-                  active-class="!bg-[#169366]/5 !text-[#169366] !border-[#169366]/20"
+                  active-class="!bg-app-green/5 !text-app-green !border-app-green/20"
                 >
                   <component :is="link.icon" class="w-5 h-5 mr-2" />
                   <span>{{ link.label }}</span>
@@ -82,7 +82,7 @@ const navLinks = [
         </Sheet>
       </header>
 
-      <div class="flex-1 bg-[#eaeaea]">
+      <div class="flex-1 bg-app-gray-light">
         <div class="max-w-7xl mx-auto overflow-hidden">
           <router-view v-slot="{ Component }">
             <Transition

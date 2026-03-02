@@ -2,11 +2,11 @@
 import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftRight, Plus } from 'lucide-vue-next'
-import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
+import CardSelectionDialog from '@/components/cards/CardSelectionDialog.vue'
 import CardImage3D from '@/components/global/CardImage3D.vue'
 
-import { useTradeAnimation } from '@/composables/useTradeAnimation'
-import { useTradeState } from '@/composables/useTradeState'
+import { useTradeAnimation } from '@/composables/trades/useTradeAnimation'
+import { useTradeState } from '@/composables/trades/useTradeState'
 import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
@@ -63,7 +63,7 @@ const handleTrade = () => {
     <div class="w-full max-w-6xl mb-12">
       <BackPageButton />
 
-      <h1 class="text-2xl font-bold text-[#169366] uppercase tracking-widest text-center">
+      <h1 class="text-2xl font-bold text-app-green uppercase tracking-widest text-center">
         Realizar Troca
       </h1>
     </div>
@@ -100,7 +100,7 @@ const handleTrade = () => {
 
               <div
                 v-if="offeringCards.length > 3"
-                class="absolute bottom-4 right-4 bg-zinc-900 border border-[#169366] text-[#169366] px-3 py-1 rounded-full text-sm font-bold shadow-xl z-10"
+                class="absolute bottom-4 right-4 bg-zinc-900 border border-app-green text-app-green px-3 py-1 rounded-full text-sm font-bold shadow-xl z-10"
               >
                 +{{ offeringCards.length - 3 }}
               </div>
@@ -114,10 +114,10 @@ const handleTrade = () => {
           </template>
           <template v-else>
             <div
-              class="w-full h-full rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center hover:border-[#169366] hover:bg-zinc-900 transition-all"
+              class="w-full h-full rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center hover:border-app-green hover:bg-zinc-900 transition-all"
             >
               <div
-                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#169366]/20 text-white group-hover:text-[#169366] transition-colors"
+                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-app-green/20 text-white group-hover:text-app-green transition-colors"
               >
                 <Plus class="w-6 h-6" />
               </div>
@@ -131,16 +131,16 @@ const handleTrade = () => {
         <div
           v-show="isTrading"
           ref="shockwaveRef"
-          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rotate-45 border-[#169366] bg-[#169366]/10 z-100 pointer-events-none opacity-0"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rotate-45 border-app-green bg-app-green/10 z-100 pointer-events-none opacity-0"
         ></div>
 
         <button
           @click="handleTrade"
           :disabled="offeringCardIds.length === 0 || tradeMutation.isPending.value"
-          class="relative w-24 h-24 md:w-32 md:h-32 rotate-45 border-4 border-[#169366] bg-[#4e4e4d] flex items-center justify-center transition-all enabled:hover:scale-110 enabled:hover:shadow-[0_0_30px_rgba(22,147,102,0.4)] disabled:opacity-50 disabled:border-zinc-700 group overflow-hidden shadow-2xl"
+          class="relative w-24 h-24 md:w-32 md:h-32 rotate-45 border-4 border-app-green bg-app-gray-dark flex items-center justify-center transition-all enabled:hover:scale-110 enabled:hover:shadow-[0_0_30px_rgba(22,147,102,0.4)] disabled:opacity-50 disabled:border-zinc-700 group overflow-hidden shadow-2xl"
         >
           <div
-            class="absolute inset-0 bg-[#169366] -translate-x-full group-hover:translate-x-0 transition-transform duration-500"
+            class="absolute inset-0 bg-app-green -translate-x-full group-hover:translate-x-0 transition-transform duration-500"
           ></div>
           <div class="relative -rotate-45 flex flex-col items-center text-white">
             <ArrowLeftRight class="w-6 h-6 md:w-8 md:h-8 mb-1" />

@@ -13,23 +13,23 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { useLogin } from '@/composables/useLogin'
+import { useLogin } from '@/composables/auth/useLogin'
 
 const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-[#169366] p-4">
+  <div class="flex min-h-screen items-center justify-center bg-app-green p-4">
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
-        <h1 class="text-4xl font-bold tracking-tight text-[#ffffff]">CardPlace</h1>
-        <p class="text-[#ffffff]">O maior marketplace de cartas do Brasil</p>
+        <h1 class="text-4xl font-bold tracking-tight text-white">CardPlace</h1>
+        <p class="text-white">O maior marketplace de cartas do Brasil</p>
       </div>
 
-      <Card class="bg-[#ffffff] text-[#169366]">
+      <Card class="bg-white text-app-green">
         <CardHeader>
           <CardTitle class="text-2xl font-semibold">Login</CardTitle>
-          <CardDescription class="text-[#4e4e4d]">
+          <CardDescription class="text-app-gray-dark">
             Entre com suas credenciais para acessar sua conta.
           </CardDescription>
         </CardHeader>
@@ -37,13 +37,13 @@ const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
           <form @submit="onSubmit" class="space-y-6">
             <FormField v-slot="{ componentField }" name="email">
               <FormItem>
-                <FormLabel class="text-[#169366]">E-mail</FormLabel>
+                <FormLabel class="text-app-green">E-mail</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="exemplo@teste.com"
                     v-bind="componentField"
-                    class="text-[#4e4e4d] placeholder:text-[#b1b1b1] focus-visible:ring-zinc-700"
+                    class="text-app-gray-dark placeholder:text-app-gray focus-visible:ring-zinc-700"
                   />
                 </FormControl>
                 <FormMessage />
@@ -52,14 +52,14 @@ const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
 
             <FormField v-slot="{ componentField }" name="password">
               <FormItem>
-                <FormLabel class="text-[#169366]">Senha</FormLabel>
+                <FormLabel class="text-app-green">Senha</FormLabel>
                 <FormControl>
                   <div class="relative">
                     <Input
                       :type="showPassword ? 'text' : 'password'"
                       placeholder="••••••••"
                       v-bind="componentField"
-                      class="text-[#4e4e4d] placeholder:text-[#b1b1b1] focus-visible:ring-zinc-700 pr-10"
+                      class="text-app-gray-dark placeholder:text-app-gray focus-visible:ring-zinc-700 pr-10"
                     />
                     <button
                       type="button"
@@ -84,7 +84,7 @@ const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
               />
               <label
                 for="remember"
-                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-[#4e4e4d] cursor-pointer"
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-app-gray-dark cursor-pointer"
               >
                 Lembrar de mim
               </label>
@@ -92,7 +92,7 @@ const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
 
             <Button
               type="submit"
-              class="cursor-pointer w-full rounded-full font-semibold text-white bg-[#e25b39] hover:bg-[#c44d2f]"
+              class="cursor-pointer w-full rounded-full font-semibold text-white bg-app-orange hover:bg-app-orange-darker"
               :disabled="isLoading"
             >
               <span v-if="isLoading">Entrando...</span>
@@ -101,9 +101,9 @@ const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
           </form>
         </CardContent>
         <CardFooter class="flex flex-col space-y-4">
-          <div class="text-center text-sm text-[#4e4e4d]">
+          <div class="text-center text-sm text-app-gray-dark">
             Não tem uma conta?
-            <router-link to="/register" class="text-[#169366] underline-offset-4 hover:underline">
+            <router-link to="/register" class="text-app-green underline-offset-4 hover:underline">
               Crie uma agora
             </router-link>
           </div>

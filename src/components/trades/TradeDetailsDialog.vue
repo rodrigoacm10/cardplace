@@ -32,7 +32,7 @@ const getReceivingCard = (trade: Trade) => {
       class="sm:max-w-[450px] md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white border-zinc-100 rounded-3xl gap-0 shadow-2xl"
     >
       <DialogHeader class="p-6 border-b border-zinc-100 shrink-0">
-        <DialogTitle class="text-xl font-bold text-[#169366]">Detalhes da Troca</DialogTitle>
+        <DialogTitle class="text-xl font-bold text-app-green">Detalhes da Troca</DialogTitle>
       </DialogHeader>
 
       <div class="grow overflow-y-auto p-8 flex flex-col items-center gap-10">
@@ -66,7 +66,7 @@ const getReceivingCard = (trade: Trade) => {
         </div>
 
         <div
-          class="flex items-center justify-center w-12 h-12 rounded-full bg-[#169366]/5 text-[#169366] border border-[#169366]/10"
+          class="flex items-center justify-center w-12 h-12 rounded-full bg-app-green/5 text-app-green border border-app-green/10"
         >
           <ArrowDown class="w-6 h-6 stroke-[3px]" />
         </div>
@@ -92,7 +92,7 @@ const getReceivingCard = (trade: Trade) => {
               />
             </div>
             <div
-              class="text-center px-4 py-2 bg-[#169366]/5 rounded-xl border border-[#169366]/10 w-full"
+              class="text-center px-4 py-2 bg-app-green/5 rounded-xl border border-app-green/10 w-full"
             >
               <span class="text-sm font-black text-zinc-900">{{
                 getReceivingCard(trade)?.card?.name

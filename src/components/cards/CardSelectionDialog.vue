@@ -34,11 +34,11 @@ const toggleSelection = (id: string) => {
 <template>
   <Dialog :open="isOpen" @update:open="emit('update:isOpen', $event)">
     <DialogContent
-      class="w-[92vw] max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-[#eaeaea] rounded-3xl gap-0 shadow-2xl"
+      class="w-[92vw] max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-app-gray-light rounded-3xl gap-0 shadow-2xl"
     >
-      <DialogHeader class="p-6 border-b border-[#eaeaea] shrink-0 space-y-4">
+      <DialogHeader class="p-6 border-b border-app-gray-light shrink-0 space-y-4">
         <div class="flex justify-between items-center">
-          <DialogTitle class="text-xl font-bold text-[#169366]">Sua Coleção</DialogTitle>
+          <DialogTitle class="text-xl font-bold text-app-green">Sua Coleção</DialogTitle>
         </div>
 
         <div class="relative">
@@ -46,7 +46,7 @@ const toggleSelection = (id: string) => {
           <Input
             v-model="searchQuery"
             placeholder="Pesquisar cartas..."
-            class="pl-10 h-10 bg-zinc-50 border-[#eaeaea] focus-visible:ring-[#169366]/20 transition-all rounded-xl"
+            class="pl-10 h-10 bg-zinc-50 border-app-gray-light focus-visible:ring-app-green/20 transition-all rounded-xl"
           />
           <button
             v-if="searchQuery"
@@ -68,12 +68,12 @@ const toggleSelection = (id: string) => {
           class="flex flex-col gap-2 group cursor-pointer"
         >
           <div
-            class="relative aspect-472/687 overflow-hidden group-hover:ring-2 group-hover:ring-[#169366] transition-all"
+            class="relative aspect-472/687 overflow-hidden group-hover:ring-2 group-hover:ring-app-green transition-all"
           >
             <img :src="card.imageUrl" class="w-full h-full object-cover" />
             <div
               v-if="selectedIds.includes(card.id)"
-              class="absolute top-2 right-2 bg-[#169366] rounded-full p-1 border-2 border-white shadow-xl z-20"
+              class="absolute top-2 right-2 bg-app-green rounded-full p-1 border-2 border-white shadow-xl z-20"
             >
               <Check class="w-4 h-4 text-white" />
             </div>
@@ -87,7 +87,7 @@ const toggleSelection = (id: string) => {
             </div>
           </div>
           <span
-            class="text-xs font-bold text-zinc-600 truncate group-hover:text-[#169366] transition-colors px-1"
+            class="text-xs font-bold text-zinc-600 truncate group-hover:text-app-green transition-colors px-1"
           >
             {{ card.name }}
           </span>
