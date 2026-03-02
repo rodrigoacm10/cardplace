@@ -2,6 +2,8 @@
 
 Um **Marketplace para Troca de Cartas** desenvolvido como desafio técnico para a vaga de Front-End Pleno. A aplicação permite que usuários se cadastrem, gerenciem sua própria coleção de cartas e realizem ofertas de troca com cartas de outros membros do marketplace.
 
+🔗 **Acesse a aplicação online:** [https://cardplace.vercel.app](https://cardplace.vercel.app)
+
 ---
 
 ## 🚀 Funcionalidades
