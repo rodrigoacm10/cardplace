@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-
 import { Button } from '@/components/ui/button'
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -20,39 +13,9 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { toast } from 'vue-sonner'
+import { useLogin } from '@/composables/useLogin'
 
-const router = useRouter()
-const authStore = useAuthStore()
-const isLoading = ref(false)
-const rememberMe = ref(false)
-const showPassword = ref(false)
-
-const formSchema = toTypedSchema(
-  z.object({
-    email: z.string().email({ message: 'E-mail inválido' }),
-    password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
-  }),
-)
-
-const form = useForm({
-  validationSchema: formSchema,
-})
-
-const onSubmit = form.handleSubmit(async (values) => {
-  isLoading.value = true
-
-  const result = await authStore.login(values, rememberMe.value)
-
-  isLoading.value = false
-
-  if (result.success) {
-    toast.success('Login realizado com sucesso!')
-    router.push('/cards')
-  } else {
-    toast.error(result.message)
-  }
-})
+const { isLoading, rememberMe, showPassword, onSubmit } = useLogin()
 </script>
 
 <template>

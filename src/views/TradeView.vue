@@ -1,95 +1,47 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import { CardsService } from '@/services/cards.service'
-import { CollectionService } from '@/services/collection.service'
-import { TradeService } from '@/services/trade.service'
-import { ArrowLeftRight, ChevronLeft, Check, Plus } from 'lucide-vue-next'
-import { toast } from 'vue-sonner'
+import { ArrowLeftRight, Plus } from 'lucide-vue-next'
 import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
-import gsap from 'gsap'
+import CardImage3D from '@/components/global/CardImage3D.vue'
+
+import { useTradeAnimation } from '@/composables/useTradeAnimation'
+import { useTradeState } from '@/composables/useTradeState'
+import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
 const router = useRouter()
-const queryClient = useQueryClient()
 
-const shockwaveRef = ref(null)
-const offeringRef = ref(null)
-const receivingRef = ref(null)
-const centralButtonRef = ref(null)
+const shockwaveRef = ref<HTMLElement | null>(null)
+const offeringRef = ref<HTMLElement | null>(null)
+const receivingRef = ref<HTMLElement | null>(null)
+const centralButtonRef = ref<HTMLElement | null>(null)
 
 const receivingId = computed(() => route.query.receivingId as string)
 
-const { data: receivingCard, isLoading: isLoadingReceiving } = useQuery({
-  queryKey: ['card', receivingId],
-  queryFn: () => CardsService.getCardById(receivingId.value).then((res) => res.data),
-  enabled: computed(() => !!receivingId.value),
-})
+const {
+  receivingCard,
+  isLoadingReceiving,
+  myCards,
+  offeringCardIds,
+  offeringCards,
+  isChoosingCard,
+  isTrading,
+  toggleCardSelection,
+  performTradeMutation,
+} = useTradeState(receivingId)
 
-const { data: myCollection, isLoading: isLoadingCollection } = useQuery({
-  queryKey: ['my-collection'],
-  queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
-})
+const { playTradeAnimation } = useTradeAnimation()
 
-const myCards = computed(() => myCollection.value?.cards || [])
-
-const offeringCardIds = ref<string[]>([])
-const offeringCards = computed(() =>
-  myCards.value.filter((c: any) => offeringCardIds.value.includes(c.id)),
-)
-
-const isChoosingCard = ref(false)
-const isTrading = ref(false)
-
-const tradeMutation = useMutation({
-  mutationFn: (data: any) => TradeService.createTrade(data),
-  onSuccess: async () => {
-    isTrading.value = true
-    toast.success('Troca realizada com sucesso!')
-    queryClient.invalidateQueries({ queryKey: ['collection'] })
-
-    await nextTick()
-
-    const tl = gsap.timeline()
-    const isMobile = window.innerWidth < 768
-
-    tl.to(centralButtonRef.value, {
-      scale: 0,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'back.in',
-    })
-
-    if (shockwaveRef.value) {
-      tl.fromTo(
-        shockwaveRef.value,
-        { scale: 0.5, opacity: 1, borderWidth: '10px' },
-        {
-          scale: 60,
-          opacity: 0,
-          borderWidth: '1px',
-          duration: 2,
-          ease: 'power2.out',
-        },
-        0,
-      )
-    }
-
-    if (isMobile) {
-      tl.to(offeringRef.value, { x: '150vw', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-      tl.to(receivingRef.value, { x: '-150vw', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-    } else {
-      tl.to(offeringRef.value, { y: '-150vh', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-      tl.to(receivingRef.value, { y: '150vh', opacity: 0, duration: 2, ease: 'power2.inOut' }, 0.2)
-    }
-
-    await tl.play()
-    router.push('/cards')
-  },
-  onError: () => {
-    toast.error('Ocorreu um erro ao realizar a troca.')
-  },
+const tradeMutation = performTradeMutation(async () => {
+  await nextTick()
+  await playTradeAnimation({
+    centralButton: centralButtonRef.value,
+    shockwave: shockwaveRef.value,
+    offering: offeringRef.value,
+    receiving: receivingRef.value,
+  })
+  router.push('/cards')
 })
 
 const handleTrade = () => {
@@ -104,29 +56,16 @@ const handleTrade = () => {
     cards: [...offeringEntries, { cardId: receivingId.value, type: 'RECEIVING' }],
   })
 }
-
-const toggleCardSelection = (id: string) => {
-  const index = offeringCardIds.value.indexOf(id)
-  if (index > -1) {
-    offeringCardIds.value.splice(index, 1)
-  } else {
-    offeringCardIds.value.push(id)
-  }
-}
 </script>
 
 <template>
   <div class="min-h-screen bg-zinc-9 p-6 flex flex-col items-center">
-    <div class="w-full max-w-6xl flex justify-between items-center mb-12">
-      <button
-        @click="router.back()"
-        class="cursor-pointer font-semibold text-[#4e4e4d] hover:text-[#3a3a39] transition-colors flex items-center gap-2 group"
-      >
-        <ChevronLeft class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-        Voltar
-      </button>
-      <h1 class="text-2xl font-bold text-[#169366] uppercase tracking-widest">Realizar Troca</h1>
-      <div class="w-20"></div>
+    <div class="w-full max-w-6xl mb-12">
+      <BackPageButton />
+
+      <h1 class="text-2xl font-bold text-[#169366] uppercase tracking-widest text-center">
+        Realizar Troca
+      </h1>
     </div>
 
     <div
@@ -151,11 +90,12 @@ const toggleCardSelection = (id: string) => {
                   opacity: 1 - (index as number) * 0.1,
                 }"
               >
-                <div
-                  class="w-full h-full border border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl"
-                >
-                  <img :src="card.imageUrl" class="w-full h-full object-cover" />
-                </div>
+                <CardImage3D
+                  :image-url="card.imageUrl"
+                  :alt="card.name"
+                  :disable3d="true"
+                  class="rounded-[inherit]"
+                />
               </div>
 
               <div
@@ -177,13 +117,11 @@ const toggleCardSelection = (id: string) => {
               class="w-full h-full rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center hover:border-[#169366] hover:bg-zinc-900 transition-all"
             >
               <div
-                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#169366]/20 group-hover:text-[#169366] transition-colors"
+                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#169366]/20 text-white group-hover:text-[#169366] transition-colors"
               >
                 <Plus class="w-6 h-6" />
               </div>
-              <span class="text-zinc-500 font-medium group-hover:text-zinc-300"
-                >Escolha os cards</span
-              >
+              <span class="font-medium text-white">Escolha os cards</span>
             </div>
           </template>
         </div>
@@ -215,13 +153,17 @@ const toggleCardSelection = (id: string) => {
         <span class="text-zinc-500 font-bold uppercase tracking-wider text-sm">Você Recebe</span>
 
         <div
-          class="w-full aspect-472/687 max-w-[300px] flex items-center justify-center overflow-hidden shadow-2xl"
+          class="w-full aspect-472/687 max-w-[300px] flex items-center justify-center overflow-visible"
         >
           <template v-if="isLoadingReceiving">
-            <div class="w-full h-full animate-pulse bg-zinc-800"></div>
+            <div class="w-full h-full animate-pulse bg-zinc-800 rounded-2xl"></div>
           </template>
           <template v-else-if="receivingCard">
-            <img :src="receivingCard.imageUrl" class="w-full h-full object-cover" />
+            <CardImage3D
+              :image-url="receivingCard.imageUrl"
+              :alt="receivingCard.name"
+              class="rounded-2xl"
+            />
           </template>
           <template v-else>
             <span class="text-zinc-500">Card não encontrado</span>

@@ -3,7 +3,11 @@ import { useQuery } from '@tanstack/vue-query'
 import { CollectionService } from '@/services/collection.service'
 import CardContainer from '@/components/CardContainer.vue'
 import { Library } from 'lucide-vue-next'
-import gsap from 'gsap'
+
+import { useStaggerAnimation } from '@/composables/useStaggerAnimation'
+
+const MAX_STAGGER_ITEMS = 12
+const STAGGER_DELAY = 0.1
 
 const {
   data: cards,
@@ -14,26 +18,7 @@ const {
   queryFn: () => CollectionService.getMyCards().then((res) => res.data),
 })
 
-const onBeforeEnter = (el: Element) => {
-  gsap.set(el, {
-    opacity: 0,
-    y: 120,
-  })
-}
-
-const onEnter = (el: Element, done: () => void) => {
-  const htmlElement = el as HTMLElement
-  const index = htmlElement.dataset.index !== undefined ? Number(htmlElement.dataset.index) : 0
-
-  gsap.to(el, {
-    opacity: 1,
-    y: 0,
-    duration: 0.5,
-    delay: (index % 12) * 0.1,
-    ease: 'power2.out',
-    onComplete: done,
-  })
-}
+const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGER_DELAY)
 </script>
 
 <template>

@@ -1,55 +1,22 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useInfiniteQuery } from '@tanstack/vue-query'
-import { CardsService } from '@/services/cards.service'
+import { ref } from 'vue'
 import CardContainer from '@/components/CardContainer.vue'
-import { useIntersectionObserver } from '@vueuse/core'
-import { Loader2 } from 'lucide-vue-next'
-import gsap from 'gsap'
+import { Library } from 'lucide-vue-next'
+
+import { useCardsState } from '@/composables/useCardsState'
+import { useStaggerAnimation } from '@/composables/useStaggerAnimation'
+
+const MAX_STAGGER_ITEMS = 12
+const STAGGER_DELAY = 0.1
 
 const loadMoreRef = ref<HTMLElement | null>(null)
 
-const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
-  queryKey: ['cards'],
-  queryFn: ({ pageParam = 1 }) =>
-    CardsService.getCards({ page: pageParam as number, rpp: 12 }).then((res) => res.data),
-  initialPageParam: 1,
-  getNextPageParam: (lastPage) => (lastPage.more ? lastPage.page + 1 : undefined),
-})
-
-const allCards = computed(() => data.value?.pages.flatMap((page) => page.list) || [])
-
-useIntersectionObserver(
+const { allCards, isLoading, hasNextPage, isFetchingNextPage } = useCardsState(
   loadMoreRef,
-  (entries) => {
-    const isIntersecting = entries[0]?.isIntersecting
-    if (isIntersecting && hasNextPage.value && !isFetchingNextPage.value) {
-      fetchNextPage()
-    }
-  },
-  { threshold: 0.1 },
+  MAX_STAGGER_ITEMS,
 )
 
-const onBeforeEnter = (el: Element) => {
-  gsap.set(el, {
-    opacity: 0,
-    y: 120,
-  })
-}
-
-const onEnter = (el: Element, done: () => void) => {
-  const htmlElement = el as HTMLElement
-  const index = htmlElement.dataset.index !== undefined ? Number(htmlElement.dataset.index) : 0
-
-  gsap.to(el, {
-    opacity: 1,
-    y: 0,
-    duration: 0.5,
-    delay: (index % 12) * 0.1,
-    ease: 'power2.out',
-    onComplete: done,
-  })
-}
+const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGER_DELAY)
 </script>
 
 <template>
@@ -60,6 +27,9 @@ const onEnter = (el: Element, done: () => void) => {
           <h1 class="text-[#128159] text-4xl font-black tracking-tight mb-2">Marketplace</h1>
           <p class="text-zinc-500 font-medium">
             Explore e colecione os cards mais raros e poderosos
+          </p>
+          <p class="text-zinc-500 text-xs">
+            Clique ou passe o mouse sobre um card para ver mais detalhes
           </p>
         </div>
       </header>

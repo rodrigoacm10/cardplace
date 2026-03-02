@@ -1,20 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
-import { ChevronLeft, Calendar, Info, Sparkles, Loader2, ArrowLeftRight } from 'lucide-vue-next'
+import { Calendar, Info, Loader2, ArrowLeftRight } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
-import gsap from 'gsap'
-import { onMounted, ref } from 'vue'
+import CardImage3D from '@/components/global/CardImage3D.vue'
+
+import { useCardDetailsAnimation } from '@/composables/useCardDetailsAnimation'
+import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
 const router = useRouter()
 const cardId = route.params.id as string
 
-const cardImageRef = ref(null)
-const cardInfoRef = ref(null)
+const cardImageRef = ref<HTMLElement | null>(null)
+const cardInfoRef = ref<HTMLElement | null>(null)
 
 const {
   data: card,
@@ -28,44 +31,18 @@ const {
 const formatDate = (dateString: string) => {
   try {
     return format(new Date(dateString), "d 'de' MMMM, yyyy", { locale: ptBR })
-  } catch (e) {
+  } catch {
     return dateString
   }
 }
 
-onMounted(() => {
-  if (cardImageRef.value && cardInfoRef.value) {
-    gsap.from(cardImageRef.value, {
-      x: -50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-    })
-    gsap.from(cardInfoRef.value, {
-      x: 50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-      delay: 0.2,
-    })
-  }
-})
+useCardDetailsAnimation(cardImageRef, cardInfoRef)
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#fafafa] p-6 lg:p-12">
+  <div class="min-h-screen p-6 lg:p-12">
     <div class="max-w-6xl mx-auto">
-      <button
-        @click="router.back()"
-        class="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors mb-8 group"
-      >
-        <div
-          class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform border border-zinc-100"
-        >
-          <ChevronLeft class="w-5 h-5" />
-        </div>
-        <span class="text-sm font-bold">Voltar</span>
-      </button>
+      <BackPageButton />
 
       <div v-if="isError" class="flex flex-col items-center justify-center py-20 text-center">
         <div
@@ -91,22 +68,17 @@ onMounted(() => {
         v-else-if="card"
         class="px-6 sm:px-20 lg:p-0 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
       >
-        <div ref="cardImageRef" class="relative group perspective-1000">
-          <div
-            class="aspect-472/687 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] transition-transform duration-700 group-hover:rotate-y-12 group-hover:rotate-x-6"
-          >
-            <img :src="card.imageUrl" :alt="card.name" class="w-full h-full object-cover" />
-            <div
-              class="absolute inset-0 bg-linear-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
-            ></div>
-          </div>
+        <div ref="cardImageRef" class="relative group aspect-472/687">
+          <CardImage3D
+            :image-url="card.imageUrl"
+            :alt="card.name"
+            class="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]"
+          />
         </div>
 
         <div ref="cardInfoRef" class="space-y-8">
           <div>
-            <h1
-              class="text-3xl md:text-5xl font-black text-zinc-900 leading-tight mb-4 tracking-tight"
-            >
+            <h1 class="text-3xl font-black text-zinc-900 leading-tight mb-4 tracking-tight">
               {{ card.name }}
             </h1>
             <div class="flex items-center gap-4 text-zinc-500">
@@ -128,14 +100,14 @@ onMounted(() => {
             <h3 class="text-xs font-black uppercase tracking-[0.2em] text-[#169366] mb-4">
               Descrição da Habilidade
             </h3>
-            <p class="text-zinc-600 md:text-lg leading-relaxed font-medium">
+            <p class="text-zinc-600 md:text-l leading-relaxed font-medium">
               {{ card.description }}
             </p>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <Button
-              class="w-full h-12 md:h-16 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white rounded-2xl text-lg font-bold shadow-xl shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
+              class="w-full h-12 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white rounded-2xl text-lg font-bold shadow-xl shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
               @click="router.push({ path: '/trade', query: { receivingId: card.id } })"
             >
               <ArrowLeftRight
