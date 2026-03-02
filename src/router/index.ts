@@ -28,11 +28,10 @@ const router = createRouter({
     {
       path: '/',
       component: MainLayout,
-      meta: { requiresAuth: true }, // Protege todo o layout e suas filhas
       children: [
         {
-          path: '', // Rota raiz redireciona para cards
-          redirect: '/cards',
+          path: '', // Rota raiz redireciona para trades (página inicial do marketplace)
+          redirect: '/trades',
         },
         {
           path: 'cards', // Vai renderizar em /cards dentro do layout
@@ -43,6 +42,7 @@ const router = createRouter({
           path: 'trade',
           name: 'trade',
           component: TradeView,
+          meta: { requiresAuth: true },
         },
         {
           path: 'trades',
@@ -58,6 +58,7 @@ const router = createRouter({
           path: 'collection',
           name: 'collection',
           component: CollectionView,
+          meta: { requiresAuth: true },
         },
         // Adicione outras páginas logadas aqui no futuro (ex: perfil, configurações)
       ],
@@ -72,7 +73,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else if (to.meta.guestOnly && isAuthenticated) {
-    next('/cards')
+    next('/trades')
   } else {
     next()
   }

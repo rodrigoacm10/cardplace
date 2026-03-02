@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useStorage } from '@vueuse/core'
 import axios from 'axios'
 import { AuthService, type LoginCredentials, type RegisterData } from '@/services/auth.service'
 
@@ -22,8 +23,10 @@ export type AuthResponse = { success: true } | { success: false; message: string
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
-  const token = ref<string | null>(localStorage.getItem('token') || sessionStorage.getItem('token'))
-  const isAuthenticated = computed(() => !!token.value)
+
+  const token = useStorage<string | null>('token', null)
+
+  const isAuthenticated = computed(() => !!token.value && token.value !== 'null')
 
   const userInitials = computed(() => {
     if (!user.value?.name) return ''
@@ -37,11 +40,13 @@ export const useAuthStore = defineStore('auth', () => {
   ): Promise<AuthResponse> {
     try {
       const response = await AuthService.login(credentials)
+
       token.value = response.data.token
       user.value = response.data.user
 
-      const storage = rememberMe ? localStorage : sessionStorage
-      storage.setItem('token', response.data.token)
+      if (!rememberMe) {
+        sessionStorage.setItem('token', response.data.token)
+      }
 
       return { success: true }
     } catch (error: unknown) {

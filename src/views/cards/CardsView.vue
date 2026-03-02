@@ -24,7 +24,9 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGE
     <div class="max-w-6xl mx-auto">
       <header class="flex justify-between items-center mb-12">
         <div>
-          <h1 class="text-app-green-dark text-4xl font-black tracking-tight mb-2">Marketplace</h1>
+          <h1 class="text-app-green-dark text-4xl font-black tracking-tight mb-2">
+            Todas as cartas
+          </h1>
           <p class="text-zinc-500 font-medium">
             Explore e colecione os cards mais raros e poderosos
           </p>

@@ -84,7 +84,7 @@ const handleAddCards = () => {
   <Dialog v-model:open="isDialogOpen">
     <DialogTrigger as-child>
       <Button
-        class="mt-6 w-full max-w-[200px] bg-app-orange hover:bg-app-orange-dark text-white flex items-center gap-2"
+        class="mt-6 h-10 hover:scale-105 active:scale-95 w-full max-w-[200px] bg-app-orange hover:bg-app-orange-dark text-white flex items-center gap-2"
       >
         <Plus class="w-4 h-4" />
         Adicionar Cartas

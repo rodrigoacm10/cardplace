@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ArrowRight, History, User, Calendar, Trash2 } from 'lucide-vue-next'
+import { ArrowRight, History, User, Calendar, Trash2, ArrowLeftRight } from 'lucide-vue-next'
 import TradeDetailsDialog from '@/components/trades/TradeDetailsDialog.vue'
 import TradeDeleteDialog from '@/components/trades/TradeDeleteDialog.vue'
 import { useTradesState } from '@/composables/trades/useTradesState'
+import { useAuthStore } from '@/stores/auth'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'vue-router'
+import TradeButton from '@/components/global/TradeButton.vue'
 
 const loadMoreRef = ref<HTMLElement | null>(null)
+const authStore = useAuthStore()
+const router = useRouter()
 
 const {
   trades,
@@ -31,12 +37,19 @@ const {
 <template>
   <div class="min-h-screen p-6">
     <div class="max-w-6xl mx-auto">
-      <header class="flex justify-between items-center mb-8">
+      <header class="flex justify-between items-center mb-12">
         <div>
-          <h1 class="text-app-green-dark text-3xl font-bold">Histórico de Trocas</h1>
+          <h1 class="text-app-green-dark text-4xl font-black tracking-tight mb-2">Marketplace</h1>
           <p class="text-zinc-500 font-medium">Acompanhe todas as negociações realizadas</p>
+          <p class="text-zinc-500 text-xs">Clique sobre uma troca para ver mais detalhes</p>
         </div>
       </header>
+
+      <div class="flex justify-end mb-6">
+        <div class="w-full sm:w-[320px]">
+          <TradeButton />
+        </div>
+      </div>
 
       <div v-if="isLoading && trades.length === 0" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div
@@ -114,8 +127,9 @@ const {
             </div>
 
             <button
+              v-if="trade.userId === authStore.user?.id"
               @click="confirmDelete($event, trade.id)"
-              class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
               title="Deletar Troca"
             >
               <Trash2 class="w-4 h-4" />
