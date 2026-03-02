@@ -24,17 +24,16 @@ const router = createRouter({
       component: RegisterView,
       meta: { guestOnly: true },
     },
-    // Rota Pai (Layout)
     {
       path: '/',
       component: MainLayout,
       children: [
         {
-          path: '', // Rota raiz redireciona para trades (página inicial do marketplace)
+          path: '',
           redirect: '/trades',
         },
         {
-          path: 'cards', // Vai renderizar em /cards dentro do layout
+          path: 'cards',
           name: 'cards',
           component: CardsView,
         },
@@ -60,7 +59,6 @@ const router = createRouter({
           component: CollectionView,
           meta: { requiresAuth: true },
         },
-        // Adicione outras páginas logadas aqui no futuro (ex: perfil, configurações)
       ],
     },
   ],
