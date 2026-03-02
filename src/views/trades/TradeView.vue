@@ -8,6 +8,7 @@ import CardImage3D from '@/components/global/CardImage3D.vue'
 import { useTradeAnimation } from '@/composables/trades/useTradeAnimation'
 import { useTradeState } from '@/composables/trades/useTradeState'
 import BackPageButton from '@/components/global/BackPageButton.vue'
+import EmptyCard from '@/components/trades/EmptyCard.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,19 +18,24 @@ const offeringRef = ref<HTMLElement | null>(null)
 const receivingRef = ref<HTMLElement | null>(null)
 const centralButtonRef = ref<HTMLElement | null>(null)
 
-const receivingId = computed(() => route.query.receivingId as string)
+const initialReceivingId = route.query.receivingId as string | undefined
 
 const {
+  receivingId,
   receivingCard,
   isLoadingReceiving,
   myCards,
+  availableReceivingCards,
   offeringCardIds,
   offeringCards,
   isChoosingCard,
   isTrading,
+  isOfferingCard,
   toggleCardSelection,
   performTradeMutation,
-} = useTradeState(receivingId)
+  openOfferingCard,
+  openReceivingCard,
+} = useTradeState(initialReceivingId)
 
 const { playTradeAnimation } = useTradeAnimation()
 
@@ -75,7 +81,7 @@ const handleTrade = () => {
         <span class="text-zinc-500 font-bold uppercase tracking-wider text-sm">Você Oferece</span>
 
         <div
-          @click="isChoosingCard = true"
+          @click="openOfferingCard()"
           class="relative w-full aspect-472/687 max-w-[300px] flex items-center justify-center cursor-pointer group"
         >
           <template v-if="offeringCards.length > 0">
@@ -113,16 +119,7 @@ const handleTrade = () => {
             </div>
           </template>
           <template v-else>
-            <div
-              class="w-full h-full rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center hover:border-app-green hover:bg-zinc-900 transition-all"
-            >
-              <div
-                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-app-green/20 text-white group-hover:text-app-green transition-colors"
-              >
-                <Plus class="w-6 h-6" />
-              </div>
-              <span class="font-medium text-white">Escolha os cards</span>
-            </div>
+            <EmptyCard type="OFFERING" />
           </template>
         </div>
       </div>
@@ -136,7 +133,7 @@ const handleTrade = () => {
 
         <button
           @click="handleTrade"
-          :disabled="offeringCardIds.length === 0 || tradeMutation.isPending.value"
+          :disabled="offeringCardIds.length === 0 || !receivingId || tradeMutation.isPending.value"
           class="relative w-24 h-24 md:w-32 md:h-32 rotate-45 border-4 border-app-green bg-app-gray-dark flex items-center justify-center transition-all enabled:hover:scale-110 enabled:hover:shadow-[0_0_30px_rgba(22,147,102,0.4)] disabled:opacity-50 disabled:border-zinc-700 group overflow-hidden shadow-2xl"
         >
           <div
@@ -149,7 +146,7 @@ const handleTrade = () => {
         </button>
       </div>
 
-      <div ref="receivingRef" class="flex flex-col items-center gap-6">
+      <div @click="openReceivingCard()" ref="receivingRef" class="flex flex-col items-center gap-6">
         <span class="text-zinc-500 font-bold uppercase tracking-wider text-sm">Você Recebe</span>
 
         <div
@@ -166,7 +163,7 @@ const handleTrade = () => {
             />
           </template>
           <template v-else>
-            <span class="text-zinc-500">Card não encontrado</span>
+            <EmptyCard type="RECEIVING" />
           </template>
         </div>
       </div>
@@ -174,9 +171,10 @@ const handleTrade = () => {
 
     <CardSelectionDialog
       v-model:isOpen="isChoosingCard"
-      :cards="myCards"
-      :selectedIds="offeringCardIds"
+      :cards="isOfferingCard ? myCards : availableReceivingCards"
+      :selectedIds="isOfferingCard ? offeringCardIds : receivingId ? [receivingId] : []"
       @toggleSelection="toggleCardSelection"
+      :type="isOfferingCard ? 'OFFERING' : 'RECEIVING'"
     />
   </div>
 </template>

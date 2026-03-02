@@ -6,13 +6,15 @@ import { TradeService, type TradePayload } from '@/services/trade.service'
 import { type Card } from '@/stores/auth'
 import { toast } from 'vue-sonner'
 
-export function useTradeState(receivingIdRef: Ref<string>) {
+export function useTradeState(initialReceivingId?: string) {
   const queryClient = useQueryClient()
 
+  const receivingId = ref<string | undefined>(initialReceivingId)
+
   const { data: receivingCard, isLoading: isLoadingReceiving } = useQuery({
-    queryKey: ['card', receivingIdRef],
-    queryFn: () => CardsService.getCardById(receivingIdRef.value).then((res) => res.data),
-    enabled: computed(() => !!receivingIdRef.value),
+    queryKey: ['card', receivingId],
+    queryFn: () => CardsService.getCardById(receivingId.value as string).then((res) => res.data),
+    enabled: computed(() => !!receivingId.value),
   })
 
   const { data: myCollection, isLoading: isLoadingCollection } = useQuery({
@@ -20,7 +22,19 @@ export function useTradeState(receivingIdRef: Ref<string>) {
     queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
   })
 
+  const { data: cardsResponse, isLoading: isLoadingAllCards } = useQuery({
+    queryKey: ['cards-bank'],
+    queryFn: () => CardsService.getCards({ page: 1, rpp: 100000 }).then((res) => res.data),
+  })
+
   const myCards = computed(() => myCollection.value?.cards || [])
+  const allCards = computed(() => cardsResponse.value?.list || [])
+
+  const availableReceivingCards = computed(() => {
+    const ownedIds = new Set(myCards.value.map((c: Card) => c.id))
+    return allCards.value.filter((c: Card) => !ownedIds.has(c.id))
+  })
+
   const offeringCardIds = ref<string[]>([])
 
   const offeringCards = computed(() =>
@@ -28,14 +42,30 @@ export function useTradeState(receivingIdRef: Ref<string>) {
   )
 
   const isChoosingCard = ref(false)
+  const isOfferingCard = ref(false)
   const isTrading = ref(false)
 
+  const openOfferingCard = () => {
+    isChoosingCard.value = true
+    isOfferingCard.value = true
+  }
+
+  const openReceivingCard = () => {
+    isChoosingCard.value = true
+    isOfferingCard.value = false
+  }
+
   const toggleCardSelection = (id: string) => {
-    const index = offeringCardIds.value.indexOf(id)
-    if (index > -1) {
-      offeringCardIds.value.splice(index, 1)
+    if (isOfferingCard.value) {
+      const index = offeringCardIds.value.indexOf(id)
+      if (index > -1) {
+        offeringCardIds.value.splice(index, 1)
+      } else {
+        offeringCardIds.value.push(id)
+      }
     } else {
-      offeringCardIds.value.push(id)
+      receivingId.value = id
+      isChoosingCard.value = false
     }
   }
 
@@ -56,15 +86,22 @@ export function useTradeState(receivingIdRef: Ref<string>) {
   }
 
   return {
+    receivingId,
     receivingCard,
     isLoadingReceiving,
     isLoadingCollection,
+    isLoadingAllCards,
     myCards,
+    allCards,
+    availableReceivingCards,
     offeringCardIds,
     offeringCards,
     isChoosingCard,
     isTrading,
+    isOfferingCard,
     toggleCardSelection,
     performTradeMutation,
+    openOfferingCard,
+    openReceivingCard,
   }
 }

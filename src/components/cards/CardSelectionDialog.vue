@@ -14,6 +14,7 @@ const props = defineProps<{
   isOpen: boolean
   cards: Card[]
   selectedIds: string[]
+  type: 'OFFERING' | 'RECEIVING'
 }>()
 
 const emit = defineEmits(['update:isOpen', 'toggleSelection'])
@@ -38,7 +39,9 @@ const toggleSelection = (id: string) => {
     >
       <DialogHeader class="p-6 border-b border-app-gray-light shrink-0 space-y-4">
         <div class="flex justify-between items-center">
-          <DialogTitle class="text-xl font-bold text-app-green">Sua Coleção</DialogTitle>
+          <DialogTitle class="text-xl font-bold text-app-green">
+            {{ type === 'OFFERING' ? 'Sua Coleção' : 'Todas as Cartas' }}
+          </DialogTitle>
         </div>
 
         <div class="relative">
