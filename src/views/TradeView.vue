@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeftRight, ChevronLeft, Plus } from 'lucide-vue-next'
+import { ArrowLeftRight, Plus } from 'lucide-vue-next'
 import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
 import CardImage3D from '@/components/global/CardImage3D.vue'
 
 import { useTradeAnimation } from '@/composables/useTradeAnimation'
 import { useTradeState } from '@/composables/useTradeState'
+import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -59,16 +60,12 @@ const handleTrade = () => {
 
 <template>
   <div class="min-h-screen bg-zinc-9 p-6 flex flex-col items-center">
-    <div class="w-full max-w-6xl flex justify-between items-center mb-12">
-      <button
-        @click="router.back()"
-        class="cursor-pointer font-semibold text-[#4e4e4d] hover:text-[#3a3a39] transition-colors flex items-center gap-2 group"
-      >
-        <ChevronLeft class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-        Voltar
-      </button>
-      <h1 class="text-2xl font-bold text-[#169366] uppercase tracking-widest">Realizar Troca</h1>
-      <div class="w-20"></div>
+    <div class="w-full max-w-6xl mb-12">
+      <BackPageButton />
+
+      <h1 class="text-2xl font-bold text-[#169366] uppercase tracking-widest text-center">
+        Realizar Troca
+      </h1>
     </div>
 
     <div
@@ -120,13 +117,11 @@ const handleTrade = () => {
               class="w-full h-full rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center hover:border-[#169366] hover:bg-zinc-900 transition-all"
             >
               <div
-                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#169366]/20 group-hover:text-[#169366] transition-colors"
+                class="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#169366]/20 text-white group-hover:text-[#169366] transition-colors"
               >
                 <Plus class="w-6 h-6" />
               </div>
-              <span class="text-zinc-500 font-medium group-hover:text-zinc-300"
-                >Escolha os cards</span
-              >
+              <span class="font-medium text-white">Escolha os cards</span>
             </div>
           </template>
         </div>

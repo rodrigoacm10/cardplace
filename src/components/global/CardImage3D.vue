@@ -65,7 +65,6 @@ const handleImageError = (event: Event) => {
     <div
       ref="cardRef"
       class="w-full h-full relative flex flex-col transform-style-3d will-change-transform bg-zinc-900"
-      :class="{ 'shadow-2xl': isHovered }"
       :style="cardStyle"
       @mousemove="handleMouseMove"
     >

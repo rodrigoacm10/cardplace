@@ -28,6 +28,9 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGE
           <p class="text-zinc-500 font-medium">
             Explore e colecione os cards mais raros e poderosos
           </p>
+          <p class="text-zinc-500 text-xs">
+            Clique ou passe o mouse sobre um card para ver mais detalhes
+          </p>
         </div>
       </header>
 

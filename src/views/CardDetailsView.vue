@@ -3,13 +3,14 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import { CardsService } from '@/services/cards.service'
-import { ChevronLeft, Calendar, Info, Loader2, ArrowLeftRight } from 'lucide-vue-next'
+import { Calendar, Info, Loader2, ArrowLeftRight } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
 import CardImage3D from '@/components/global/CardImage3D.vue'
 
 import { useCardDetailsAnimation } from '@/composables/useCardDetailsAnimation'
+import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -39,19 +40,9 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#fafafa] p-6 lg:p-12">
+  <div class="min-h-screen p-6 lg:p-12">
     <div class="max-w-6xl mx-auto">
-      <button
-        @click="router.back()"
-        class="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors mb-8 group"
-      >
-        <div
-          class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform border border-zinc-100"
-        >
-          <ChevronLeft class="w-5 h-5" />
-        </div>
-        <span class="text-sm font-bold">Voltar</span>
-      </button>
+      <BackPageButton />
 
       <div v-if="isError" class="flex flex-col items-center justify-center py-20 text-center">
         <div
@@ -81,7 +72,7 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
           <CardImage3D
             :image-url="card.imageUrl"
             :alt="card.name"
-            class="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] rounded-3xl"
+            class="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]"
           />
         </div>
 

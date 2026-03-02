@@ -60,7 +60,14 @@ let showTimeout: ReturnType<typeof setTimeout> | null = null
 let hideTimeout: ReturnType<typeof setTimeout> | null = null
 
 const { width: windowWidth } = useWindowSize()
-const tooltipCoords = ref({ top: 0, left: 0 })
+const tooltipCoords = ref({
+  cardTop: 0,
+  cardLeft: 0,
+  cardWidth: 0,
+  cardHeight: 0,
+  desktopTop: 0,
+  desktopLeft: 0,
+})
 
 const calculatePosition = () => {
   if (cardRef.value) {
@@ -73,13 +80,13 @@ const calculatePosition = () => {
       tooltipPosition.value = 'right'
     }
 
-    if (window.innerWidth >= 640) {
-      tooltipCoords.value = {
-        top: rect.top + rect.height / 2,
-        left: tooltipPosition.value === 'right' ? rect.right + 16 : rect.left - 16,
-      }
-    } else {
-      tooltipCoords.value = { top: 0, left: 0 }
+    tooltipCoords.value = {
+      cardTop: rect.top,
+      cardLeft: rect.left,
+      cardWidth: rect.width,
+      cardHeight: rect.height,
+      desktopTop: rect.top + rect.height / 2,
+      desktopLeft: tooltipPosition.value === 'right' ? rect.right + 16 : rect.left - 16,
     }
   }
 }
@@ -101,6 +108,7 @@ onUnmounted(() => {
 })
 
 const handleMouseEnter = () => {
+  if (windowWidth.value < 640) return
   isHovered.value = true
 
   if (hideTimeout) clearTimeout(hideTimeout)
@@ -112,6 +120,7 @@ const handleMouseEnter = () => {
 }
 
 const handleMouseLeave = () => {
+  if (windowWidth.value < 640) return
   isHovered.value = false
 
   if (showTimeout) clearTimeout(showTimeout)
@@ -121,6 +130,19 @@ const handleMouseLeave = () => {
       showTooltip.value = false
     }
   }, 300)
+}
+
+const handleCardClick = () => {
+  if (windowWidth.value < 640) {
+    if (showTooltip.value) {
+      showTooltip.value = false
+    } else {
+      calculatePosition()
+      showTooltip.value = true
+    }
+  } else {
+    navigateToDetails()
+  }
 }
 
 const handleTooltipMouseEnter = () => {
@@ -153,12 +175,12 @@ const handleClose = () => {
     <div
       ref="cardRef"
       class="relative cursor-pointer transition-shadow duration-300"
-      :class="{ 'shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]': isHovered }"
+      @click="handleCardClick"
     >
       <CardImage3D :image-url="card.imageUrl" :alt="card.name" class="rounded-[inherit]">
         <div
           v-if="isInCollection && !hideTrade"
-          class="absolute -top-3 -right-3 font-bold bg-[#169366] text-white px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 shadow-lg border border-[#ffffff] border-2 uppercase tracking-wider backdrop-blur-sm z-20"
+          class="absolute -top-3 -right-3 font-bold bg-[#169366] text-white px-2 py-1 rounded-md text-[10px] flex items-center gap-1 border-[#ffffff] border-2 uppercase tracking-wider backdrop-blur-sm z-20"
         >
           <Check class="w-3 h-3" />
           Já possui
@@ -167,77 +189,104 @@ const handleClose = () => {
     </div>
 
     <Teleport to="body">
-      <div
-        v-if="showTooltip"
-        class="rounded-xl shadow-2xl p-5 border border-zinc-200 transition-all duration-300 flex flex-col fixed z-100"
-        @click="handleClose"
-        @mouseenter="handleTooltipMouseEnter"
-        @mouseleave="handleTooltipMouseLeave"
-        :style="
-          windowWidth >= 640
-            ? {
-                top: `${tooltipCoords.top}px`,
-                left: `${tooltipCoords.left}px`,
-                transform:
-                  tooltipPosition === 'right' ? 'translateY(-50%)' : 'translate(-100%, -50%)',
-              }
-            : {
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-              }
-        "
-        :class="[
-          showTooltip
-            ? 'opacity-100 visible pointer-events-auto'
-            : 'opacity-0 invisible pointer-events-none',
-
-          'bg-zinc-900/60 backdrop-blur-md sm:bg-white sm:backdrop-blur-none sm:w-72 sm:h-auto',
-
-          showTooltip
-            ? 'translate-x-0'
-            : tooltipPosition === 'right'
-              ? '-translate-x-4'
-              : 'translate-x-4',
-        ]"
+      <transition
+        enter-active-class="transition-opacity duration-300"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-200"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
       >
         <div
-          class="hidden sm:block absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-zinc-200 transform rotate-45"
-          :class="
-            tooltipPosition === 'right' ? '-left-2 border-b border-l' : '-right-2 border-t border-r'
-          "
+          v-if="showTooltip && windowWidth < 640"
+          class="fixed inset-0 z-40"
+          @click="handleClose"
         ></div>
+      </transition>
 
-        <div class="relative z-10 flex flex-col h-full sm:h-auto">
-          <h2 class="text-xl font-bold text-white sm:text-[#169366] truncate" :title="card.name">
-            {{ card.name }}
-          </h2>
+      <transition
+        enter-active-class="transition-all duration-300 ease-out"
+        :enter-from-class="`opacity-0 scale-95 ${windowWidth >= 640 ? (tooltipPosition === 'right' ? '-translate-x-4' : 'translate-x-4') : 'translate-y-4'}`"
+        enter-to-class="opacity-100 translate-x-0 translate-y-0 scale-100"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100 translate-x-0 translate-y-0 scale-100"
+        :leave-to-class="`opacity-0 scale-95 ${windowWidth >= 640 ? (tooltipPosition === 'right' ? '-translate-x-4' : 'translate-x-4') : 'translate-y-4'}`"
+      >
+        <div
+          v-if="showTooltip"
+          class="overflow-hidden sm:overflow-visible sm:rounded-xl shadow-2xl p-4 sm:p-5 border border-[#169366] sm:border-zinc-200 flex flex-col fixed z-40 bg-zinc-900/95 backdrop-blur-md sm:bg-white sm:backdrop-blur-none sm:w-72 sm:h-auto"
+          @click.stop="() => {}"
+          @mouseenter="handleTooltipMouseEnter"
+          @mouseleave="handleTooltipMouseLeave"
+          :style="
+            windowWidth >= 640
+              ? {
+                  top: `${tooltipCoords.desktopTop}px`,
+                  left: `${tooltipCoords.desktopLeft}px`,
+                  transform:
+                    tooltipPosition === 'right' ? 'translateY(-50%)' : 'translate(-100%, -50%)',
+                }
+              : {
+                  top: `${tooltipCoords.cardTop}px`,
+                  left: `${tooltipCoords.cardLeft}px`,
+                  width: `${tooltipCoords.cardWidth}px`,
+                  height: `${tooltipCoords.cardHeight}px`,
+                }
+          "
+        >
+          <div
+            class="hidden sm:block absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-zinc-200 transform rotate-45"
+            :class="
+              tooltipPosition === 'right'
+                ? '-left-2 border-b border-l'
+                : '-right-2 border-t border-r'
+            "
+          ></div>
 
-          <p class="text-sm text-zinc-200 sm:text-zinc-600 mt-3 line-clamp-6">
-            {{ card.description }}
-          </p>
+          <div
+            class="relative z-10 flex flex-col h-full sm:h-auto overflow-y-auto custom-scrollbar"
+          >
+            <div class="flex justify-between items-start">
+              <h2
+                class="text-xl font-bold text-white sm:text-[#169366] truncate pr-2"
+                :title="card.name"
+              >
+                {{ card.name }}
+              </h2>
+              <button
+                v-if="windowWidth < 640"
+                @click="handleClose"
+                class="text-zinc-400 hover:text-white shrink-0 -mt-1 -mr-1 p-2"
+              >
+                ✕
+              </button>
+            </div>
 
-          <div class="mt-auto sm:mt-5 pt-4 border-t border-zinc-100 flex gap-3">
-            <Button
-              @click.stop="navigateToDetails"
-              class="flex-1 bg-white text-[#169366] border border-[#169366] hover:bg-[#169366]/5 transition-colors shadow-sm cursor-pointer"
-            >
-              Detalhes
-            </Button>
+            <p class="text-sm text-zinc-200 sm:text-zinc-600 mt-3 line-clamp-6">
+              {{ card.description }}
+            </p>
 
-            <Button
-              v-if="!hideTrade"
-              @click.stop="navigateToTrade"
-              class="flex-1 bg-[#e25b39] text-white hover:bg-[#ce4d2c] transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
-              :disabled="isInCollection"
-            >
-              <ArrowLeftRight class="w-4 h-4" />
-              Trocar
-            </Button>
+            <div class="mt-auto sm:mt-5 pt-4 border-t border-zinc-100 flex gap-3">
+              <Button
+                @click.stop="navigateToDetails"
+                class="flex-1 bg-white text-[#169366] border border-[#169366] hover:bg-[#169366]/5 transition-colors shadow-sm cursor-pointer"
+              >
+                Detalhes
+              </Button>
+
+              <Button
+                v-if="!hideTrade"
+                @click.stop="navigateToTrade"
+                class="flex-1 bg-[#e25b39] text-white hover:bg-[#ce4d2c] transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
+                :disabled="isInCollection"
+              >
+                <ArrowLeftRight class="w-4 h-4" />
+                Trocar
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </transition>
     </Teleport>
   </div>
 </template>
