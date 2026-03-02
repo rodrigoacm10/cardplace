@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 const isMobileMenuOpen = ref(false)
 
 const navLinks = [
-  { to: '/cards', label: 'Marketplace', icon: Search },
-  { to: '/trades', label: 'Trocas', icon: ArrowLeftRight },
+  { to: '/trades', label: 'Marketplace', icon: ArrowLeftRight },
+  { to: '/cards', label: 'Todas as cartas', icon: Search },
   { to: '/collection', label: 'Coleção', icon: Library },
 ]
 </script>

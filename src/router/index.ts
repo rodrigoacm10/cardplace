@@ -73,7 +73,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
   } else if (to.meta.guestOnly && isAuthenticated) {
-    next('/cards')
+    next('/trades')
   } else {
     next()
   }

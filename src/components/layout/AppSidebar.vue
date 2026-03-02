@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/stores/auth'
 import { useQuery } from '@tanstack/vue-query'
 import { CollectionService } from '@/services/collection.service'
-import { LogOut } from 'lucide-vue-next'
+import { LogOut, Plus } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import AddCardsDialog from '@/components/cards/AddCardsDialog.vue'
 
@@ -89,6 +89,14 @@ const handleLogout = () => {
               </div>
 
               <AddCardsDialog />
+
+              <Button
+                @click="router.push('/trade')"
+                class="mt-6 w-full max-w-[200px] bg-app-orange hover:bg-app-orange-dark text-white flex items-center gap-2"
+              >
+                <Plus class="w-4 h-4" />
+                Realizar Troca
+              </Button>
             </div>
           </template>
 
