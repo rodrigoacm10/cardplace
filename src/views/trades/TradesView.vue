@@ -4,8 +4,10 @@ import { ArrowRight, History, User, Calendar, Trash2 } from 'lucide-vue-next'
 import TradeDetailsDialog from '@/components/trades/TradeDetailsDialog.vue'
 import TradeDeleteDialog from '@/components/trades/TradeDeleteDialog.vue'
 import { useTradesState } from '@/composables/trades/useTradesState'
+import { useAuthStore } from '@/stores/auth'
 
 const loadMoreRef = ref<HTMLElement | null>(null)
+const authStore = useAuthStore()
 
 const {
   trades,
@@ -114,8 +116,9 @@ const {
             </div>
 
             <button
+              v-if="trade.userId === authStore.user?.id"
               @click="confirmDelete($event, trade.id)"
-              class="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
               title="Deletar Troca"
             >
               <Trash2 class="w-4 h-4" />
