@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 import { CollectionService } from '@/services/collection.service'
-import CardContainer from '@/components/CardContainer.vue'
+import CardContainer from '@/components/cards/CardContainer.vue'
 import { Library } from 'lucide-vue-next'
 
-import { useStaggerAnimation } from '@/composables/useStaggerAnimation'
+import { useStaggerAnimation } from '@/composables/core/useStaggerAnimation'
 
 const MAX_STAGGER_ITEMS = 12
 const STAGGER_DELAY = 0.1

@@ -9,7 +9,7 @@ import { ptBR } from 'date-fns/locale'
 import { Button } from '@/components/ui/button'
 import CardImage3D from '@/components/global/CardImage3D.vue'
 
-import { useCardDetailsAnimation } from '@/composables/useCardDetailsAnimation'
+import { useCardDetailsAnimation } from '@/composables/cards/useCardDetailsAnimation'
 import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()
@@ -69,11 +69,7 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
         class="px-6 sm:px-20 lg:p-0 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
       >
         <div ref="cardImageRef" class="relative group aspect-472/687">
-          <CardImage3D
-            :image-url="card.imageUrl"
-            :alt="card.name"
-            class="shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)]"
-          />
+          <CardImage3D :image-url="card.imageUrl" :alt="card.name" />
         </div>
 
         <div ref="cardInfoRef" class="space-y-8">
@@ -107,7 +103,7 @@ useCardDetailsAnimation(cardImageRef, cardInfoRef)
 
           <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <Button
-              class="w-full h-12 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white rounded-2xl text-lg font-bold shadow-xl shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
+              class="w-full h-12 px-10 bg-[#e25b39] hover:bg-[#ce4d2c] text-white text-lg font-bold shadow-orange-100 group transition-all hover:scale-105 active:scale-95"
               @click="router.push({ path: '/trade', query: { receivingId: card.id } })"
             >
               <ArrowLeftRight

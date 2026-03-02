@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/vue-query'
 import { CollectionService } from '@/services/collection.service'
 import { LogOut } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
-import AddCardsDialog from '@/components/AddCardsDialog.vue'
+import AddCardsDialog from '@/components/cards/AddCardsDialog.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()

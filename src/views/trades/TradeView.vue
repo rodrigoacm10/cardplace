@@ -2,11 +2,11 @@
 import { ref, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftRight, Plus } from 'lucide-vue-next'
-import CardSelectionDialog from '@/components/CardSelectionDialog.vue'
+import CardSelectionDialog from '@/components/cards/CardSelectionDialog.vue'
 import CardImage3D from '@/components/global/CardImage3D.vue'
 
-import { useTradeAnimation } from '@/composables/useTradeAnimation'
-import { useTradeState } from '@/composables/useTradeState'
+import { useTradeAnimation } from '@/composables/trades/useTradeAnimation'
+import { useTradeState } from '@/composables/trades/useTradeState'
 import BackPageButton from '@/components/global/BackPageButton.vue'
 
 const route = useRoute()

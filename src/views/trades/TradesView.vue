@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ArrowRight, History, User, Calendar, Trash2 } from 'lucide-vue-next'
-import TradeDetailsDialog from '@/components/TradeDetailsDialog.vue'
-import TradeDeleteDialog from '@/components/TradeDeleteDialog.vue'
-import { useTradesState } from '@/composables/useTradesState'
+import TradeDetailsDialog from '@/components/trades/TradeDetailsDialog.vue'
+import TradeDeleteDialog from '@/components/trades/TradeDeleteDialog.vue'
+import { useTradesState } from '@/composables/trades/useTradesState'
 
 const loadMoreRef = ref<HTMLElement | null>(null)
 
