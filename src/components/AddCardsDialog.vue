@@ -27,11 +27,22 @@ const queryClient = useQueryClient()
 const isDialogOpen = ref(false)
 const selectedCardIds = ref<string[]>([])
 
+const { data: collectionData } = useQuery({
+  queryKey: ['collection'],
+  queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
+  enabled: isDialogOpen,
+  staleTime: 1000 * 60 * 5,
+})
+
+const ownedCardIds = computed(() => {
+  return collectionData.value?.cards?.map((c: any) => c.id) || []
+})
+
 const { data: cardsResponse, isLoading: isFetchingCards } = useQuery({
   queryKey: ['cards-bank'],
   queryFn: () => CardsService.getCards({ page: 1, rpp: 100000 }).then((res) => res.data),
-  enabled: isDialogOpen,  
-  staleTime: 1000 * 60 * 5,  
+  enabled: isDialogOpen,
+  staleTime: 1000 * 60 * 5,
 })
 
 const allCards = computed(() => cardsResponse.value?.list || [])
@@ -108,19 +119,27 @@ const handleAddCards = () => {
                 v-for="card in allCards"
                 :key="card.id"
                 :value="card.name"
-                @select="toggleCard(card.id)"
+                @select="ownedCardIds.includes(card.id) ? null : toggleCard(card.id)"
+                :disabled="ownedCardIds.includes(card.id)"
                 class="cursor-pointer aria-selected:bg-[#169366]/10 aria-selected:text-[#169366]"
+                :class="{
+                  'opacity-50 cursor-not-allowed': ownedCardIds.includes(card.id),
+                }"
               >
                 <div class="flex items-center gap-3 w-full">
                   <div
                     class="flex h-4 w-4 items-center justify-center rounded-[4px] border transition-colors"
-                    :class="
+                    :class="[
                       selectedCardIds.includes(card.id)
                         ? 'bg-[#169366] border-[#169366] text-white'
-                        : 'border-zinc-300'
-                    "
+                        : 'border-zinc-300',
+                      ownedCardIds.includes(card.id) ? 'bg-zinc-200 border-zinc-300' : '',
+                    ]"
                   >
-                    <Check v-if="selectedCardIds.includes(card.id)" class="h-3 w-3" />
+                    <Check
+                      v-if="selectedCardIds.includes(card.id) || ownedCardIds.includes(card.id)"
+                      class="h-3 w-3"
+                    />
                   </div>
 
                   <img
@@ -130,7 +149,17 @@ const handleAddCards = () => {
                     @error="'https://via.placeholder.com/30x40'"
                   />
 
-                  <span class="font-medium">{{ card.name }}</span>
+                  <span
+                    class="font-medium"
+                    :class="{ 'text-zinc-400': ownedCardIds.includes(card.id) }"
+                  >
+                    {{ card.name }}
+                    <span
+                      v-if="ownedCardIds.includes(card.id)"
+                      class="text-xs text-zinc-400 ml-2 font-normal"
+                      >(Já possui)</span
+                    >
+                  </span>
                 </div>
               </CommandItem>
             </CommandGroup>
