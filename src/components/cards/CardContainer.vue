@@ -180,7 +180,7 @@ const handleClose = () => {
       <CardImage3D :image-url="card.imageUrl" :alt="card.name" class="rounded-[inherit]">
         <div
           v-if="isInCollection && !hideTrade"
-          class="absolute -top-3 -right-3 font-bold bg-[#169366] text-white px-2 py-1 rounded-md text-[10px] flex items-center gap-1 border-[#ffffff] border-2 uppercase tracking-wider backdrop-blur-sm z-20"
+          class="absolute -top-3 -right-3 font-bold bg-app-green text-white px-2 py-1 rounded-md text-[10px] flex items-center gap-1 border-white border-2 uppercase tracking-wider backdrop-blur-sm z-20"
         >
           <Check class="w-3 h-3" />
           Já possui
@@ -214,7 +214,7 @@ const handleClose = () => {
       >
         <div
           v-if="showTooltip"
-          class="overflow-hidden sm:overflow-visible sm:rounded-xl shadow-2xl p-4 sm:p-5 border border-[#169366] sm:border-zinc-200 flex flex-col fixed z-40 bg-zinc-900/95 backdrop-blur-md sm:bg-white sm:backdrop-blur-none sm:w-72 sm:h-auto"
+          class="overflow-hidden sm:overflow-visible sm:rounded-xl shadow-2xl p-4 sm:p-5 border border-app-green sm:border-zinc-200 flex flex-col fixed z-40 bg-zinc-900/95 backdrop-blur-md sm:bg-white sm:backdrop-blur-none sm:w-72 sm:h-auto"
           @click.stop="() => {}"
           @mouseenter="handleTooltipMouseEnter"
           @mouseleave="handleTooltipMouseLeave"
@@ -248,7 +248,7 @@ const handleClose = () => {
           >
             <div class="flex justify-between items-start">
               <h2
-                class="text-xl font-bold text-white sm:text-[#169366] truncate pr-2"
+                class="text-xl font-bold text-white sm:text-app-green truncate pr-2"
                 :title="card.name"
               >
                 {{ card.name }}
@@ -269,7 +269,7 @@ const handleClose = () => {
             <div class="mt-auto sm:mt-5 pt-4 border-t border-zinc-100 flex gap-3">
               <Button
                 @click.stop="navigateToDetails"
-                class="flex-1 bg-white text-[#169366] border border-[#169366] hover:bg-[#169366]/5 transition-colors shadow-sm cursor-pointer"
+                class="flex-1 bg-white text-app-green border border-app-green hover:bg-app-green/5 transition-colors shadow-sm cursor-pointer"
               >
                 Detalhes
               </Button>
@@ -277,7 +277,7 @@ const handleClose = () => {
               <Button
                 v-if="!hideTrade"
                 @click.stop="navigateToTrade"
-                class="flex-1 bg-[#e25b39] text-white hover:bg-[#ce4d2c] transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
+                class="flex-1 bg-app-orange text-white hover:bg-app-orange-dark transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2"
                 :disabled="isInCollection"
               >
                 <ArrowLeftRight class="w-4 h-4" />

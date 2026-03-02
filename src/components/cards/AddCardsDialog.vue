@@ -84,7 +84,7 @@ const handleAddCards = () => {
   <Dialog v-model:open="isDialogOpen">
     <DialogTrigger as-child>
       <Button
-        class="mt-6 w-full max-w-[200px] bg-[#e25b39] hover:bg-[#ce4d2c] text-white flex items-center gap-2"
+        class="mt-6 w-full max-w-[200px] bg-app-orange hover:bg-app-orange-dark text-white flex items-center gap-2"
       >
         <Plus class="w-4 h-4" />
         Adicionar Cartas
@@ -93,7 +93,7 @@ const handleAddCards = () => {
 
     <DialogContent class="sm:max-w-[450px]">
       <DialogHeader>
-        <DialogTitle class="text-[#169366]">Adicionar à Coleção</DialogTitle>
+        <DialogTitle class="text-app-green">Adicionar à Coleção</DialogTitle>
         <DialogDescription>
           Busque e selecione as cartas que deseja vincular ao seu perfil.
         </DialogDescription>
@@ -108,7 +108,7 @@ const handleAddCards = () => {
               v-if="isFetchingCards"
               class="py-6 text-center text-sm text-zinc-500 flex flex-col items-center gap-2"
             >
-              <Loader2 class="w-5 h-5 animate-spin text-[#169366]" />
+              <Loader2 class="w-5 h-5 animate-spin text-app-green" />
               Carregando banco de cartas...
             </div>
 
@@ -121,7 +121,7 @@ const handleAddCards = () => {
                 :value="card.name"
                 @select="ownedCardIds.includes(card.id) ? null : toggleCard(card.id)"
                 :disabled="ownedCardIds.includes(card.id)"
-                class="cursor-pointer aria-selected:bg-[#169366]/10 aria-selected:text-[#169366]"
+                class="cursor-pointer aria-selected:bg-app-green/10 aria-selected:text-app-green"
                 :class="{
                   'opacity-50 cursor-not-allowed': ownedCardIds.includes(card.id),
                 }"
@@ -131,7 +131,7 @@ const handleAddCards = () => {
                     class="flex h-4 w-4 items-center justify-center rounded-[4px] border transition-colors"
                     :class="[
                       selectedCardIds.includes(card.id)
-                        ? 'bg-[#169366] border-[#169366] text-white'
+                        ? 'bg-app-green border-app-green text-white'
                         : 'border-zinc-300',
                       ownedCardIds.includes(card.id) ? 'bg-zinc-200 border-zinc-300' : '',
                     ]"
@@ -182,7 +182,7 @@ const handleAddCards = () => {
           Cancelar
         </Button>
         <Button
-          class="bg-[#169366] text-white hover:bg-[#128159] min-w-[100px]"
+          class="bg-app-green text-white hover:bg-app-green-dark min-w-[100px]"
           @click="handleAddCards"
           :disabled="addCardsMutation.isPending.value || selectedCardIds.length === 0"
         >

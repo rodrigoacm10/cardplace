@@ -18,17 +18,17 @@ const { isLoading, showPassword, onSubmit } = useRegister()
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-[#169366] p-4">
+  <div class="flex min-h-screen items-center justify-center bg-app-green p-4">
     <div class="w-full max-w-md">
       <div class="mb-8 text-center">
-        <h1 class="text-4xl font-bold tracking-tight text-[#ffffff]">CardPlace</h1>
-        <p class="text-[#ffffff]">O maior marketplace de cartas do Brasil</p>
+        <h1 class="text-4xl font-bold tracking-tight text-white">CardPlace</h1>
+        <p class="text-white">O maior marketplace de cartas do Brasil</p>
       </div>
 
-      <Card class="bg-[#ffffff] text-[#169366]">
+      <Card class="bg-white text-app-green">
         <CardHeader>
           <CardTitle class="text-2xl font-semibold">Criar Conta</CardTitle>
-          <CardDescription class="text-[#4e4e4d]">
+          <CardDescription class="text-app-gray-dark">
             Preencha os dados abaixo para se registrar.
           </CardDescription>
         </CardHeader>
@@ -36,12 +36,12 @@ const { isLoading, showPassword, onSubmit } = useRegister()
           <form @submit="onSubmit" class="space-y-6">
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>
-                <FormLabel class="text-[#169366]">Nome</FormLabel>
+                <FormLabel class="text-app-green">Nome</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Seu nome"
                     v-bind="componentField"
-                    class="text-[#4e4e4d] placeholder:text-[#b1b1b1] focus-visible:ring-zinc-700"
+                    class="text-app-gray-dark placeholder:text-app-gray focus-visible:ring-zinc-700"
                   />
                 </FormControl>
                 <FormMessage />
@@ -50,13 +50,13 @@ const { isLoading, showPassword, onSubmit } = useRegister()
 
             <FormField v-slot="{ componentField }" name="email">
               <FormItem>
-                <FormLabel class="text-[#169366]">E-mail</FormLabel>
+                <FormLabel class="text-app-green">E-mail</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="exemplo@teste.com"
                     v-bind="componentField"
-                    class="text-[#4e4e4d] placeholder:text-[#b1b1b1] focus-visible:ring-zinc-700"
+                    class="text-app-gray-dark placeholder:text-app-gray focus-visible:ring-zinc-700"
                   />
                 </FormControl>
                 <FormMessage />
@@ -65,14 +65,14 @@ const { isLoading, showPassword, onSubmit } = useRegister()
 
             <FormField v-slot="{ componentField }" name="password">
               <FormItem>
-                <FormLabel class="text-[#169366]">Senha</FormLabel>
+                <FormLabel class="text-app-green">Senha</FormLabel>
                 <FormControl>
                   <div class="relative">
                     <Input
                       :type="showPassword ? 'text' : 'password'"
                       placeholder="••••••••"
                       v-bind="componentField"
-                      class="text-[#4e4e4d] placeholder:text-[#b1b1b1] focus-visible:ring-zinc-700 pr-10"
+                      class="text-app-gray-dark placeholder:text-app-gray focus-visible:ring-zinc-700 pr-10"
                     />
                     <button
                       type="button"
@@ -90,13 +90,13 @@ const { isLoading, showPassword, onSubmit } = useRegister()
 
             <FormField v-slot="{ componentField }" name="confirmPassword">
               <FormItem>
-                <FormLabel class="text-[#169366]">Confirmar Senha</FormLabel>
+                <FormLabel class="text-app-green">Confirmar Senha</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
                     placeholder="••••••••"
                     v-bind="componentField"
-                    class="text-[#4e4e4d] placeholder:text-[#b1b1b1] focus-visible:ring-zinc-700"
+                    class="text-app-gray-dark placeholder:text-app-gray focus-visible:ring-zinc-700"
                   />
                 </FormControl>
                 <FormMessage />
@@ -105,7 +105,7 @@ const { isLoading, showPassword, onSubmit } = useRegister()
 
             <Button
               type="submit"
-              class="cursor-pointer w-full rounded-full font-semibold text-white bg-[#e25b39] hover:bg-[#c44d2f]"
+              class="cursor-pointer w-full rounded-full font-semibold text-white bg-app-orange hover:bg-app-orange-darker"
               :disabled="isLoading"
             >
               <span v-if="isLoading">Registrando...</span>
@@ -114,9 +114,9 @@ const { isLoading, showPassword, onSubmit } = useRegister()
           </form>
         </CardContent>
         <CardFooter class="flex flex-col space-y-4">
-          <div class="text-center text-sm text-[#4e4e4d]">
+          <div class="text-center text-sm text-app-gray-dark">
             Já tem uma conta?
-            <router-link to="/login" class="text-[#169366] underline-offset-4 hover:underline">
+            <router-link to="/login" class="text-app-green underline-offset-4 hover:underline">
               Faça login
             </router-link>
           </div>

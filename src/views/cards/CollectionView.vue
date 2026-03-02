@@ -26,7 +26,7 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGE
     <div class="max-w-6xl mx-auto">
       <header class="flex justify-between items-center mb-12">
         <div>
-          <h1 class="text-[#128159] text-4xl font-black tracking-tight mb-2">Minha Coleção</h1>
+          <h1 class="text-app-green-dark text-4xl font-black tracking-tight mb-2">Minha Coleção</h1>
           <p class="text-zinc-500 font-medium">Sua biblioteca pessoal de cards colecionados</p>
         </div>
       </header>
@@ -76,7 +76,7 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation(MAX_STAGGER_ITEMS, STAGGE
           <p class="text-zinc-500 mt-2">Você ainda não possui cards em sua coleção.</p>
           <router-link
             to="/cards"
-            class="mt-8 px-8 py-3 bg-[#169366] text-white rounded-2xl text-sm font-bold shadow-lg hover:bg-[#128159] transition-all hover:scale-105 active:scale-95"
+            class="mt-8 px-8 py-3 bg-app-green text-white rounded-2xl text-sm font-bold shadow-lg hover:bg-app-green-dark transition-all hover:scale-105 active:scale-95"
           >
             Começar Coleção
           </router-link>
