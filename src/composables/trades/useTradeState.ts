@@ -18,7 +18,7 @@ export function useTradeState(initialReceivingId?: string) {
   })
 
   const { data: myCollection, isLoading: isLoadingCollection } = useQuery({
-    queryKey: ['my-collection'],
+    queryKey: ['collection'],
     queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
   })
 

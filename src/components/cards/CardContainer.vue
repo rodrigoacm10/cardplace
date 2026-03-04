@@ -44,11 +44,6 @@ const navigateToTrade = () => {
   })
 }
 
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement
-  target.src = 'https://via.placeholder.com/472x687?text=Sem+Imagem'
-}
-
 const cardRef = ref<HTMLElement | null>(null)
 const isHovered = ref(false)
 
