@@ -26,7 +26,7 @@ export function useLogin() {
 
     if (result.success) {
       toast.success('Login realizado com sucesso!')
-      router.push('/cards')
+      router.push('/trades')
     } else {
       toast.error(result.message)
     }

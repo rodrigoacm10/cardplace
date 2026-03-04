@@ -73,7 +73,11 @@ const toggleSelection = (id: string) => {
           <div
             class="relative aspect-472/687 overflow-hidden group-hover:ring-2 group-hover:ring-app-green transition-all"
           >
-            <img :src="card.imageUrl" class="w-full h-full object-cover" />
+            <img
+              :src="card.imageUrl || '/card-sleeve.png'"
+              @error="(e) => ((e.target as HTMLImageElement).src = '/card-sleeve.png')"
+              class="w-full h-full object-cover"
+            />
             <div
               v-if="selectedIds.includes(card.id)"
               class="absolute top-2 right-2 bg-app-green rounded-full p-1 border-2 border-white shadow-xl z-20"

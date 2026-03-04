@@ -8,7 +8,6 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  // Agora procura o token nos dois lugares
   let token = localStorage.getItem('token') || sessionStorage.getItem('token')
 
   if (token === 'null') {
