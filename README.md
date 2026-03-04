@@ -78,11 +78,27 @@ Acesse o endereço exibido no terminal (normalmente `http://localhost:5173`) no 
 
 ---
 
+## 🧪 Testes Automatizados
+
+A aplicação conta com uma suíte de testes de integração desenvolvida com **Vitest** e **Vue Test Utils**. Devido ao prazo do desafio, o foco principal foi garantir a confiabilidade dos **fluxos críticos e caminhos felizes (Happy Path)** do sistema.
+
+Os testes cobrem a renderização correta das views principais, o gerenciamento de estado global (Pinia), a interação do usuário na interface (como a criação de uma oferta de troca) e a comunicação assertiva com os mocks da API.
+
+Para rodar os testes localmente, execute:
+
+```bash
+npm run test:unit
+```
+
 ## 🔮 Melhorias Futuras
 
 Devido ao tempo limitado para a entrega do desafio, optei por priorizar a completude dos requisitos funcionais, a arquitetura limpa e a experiência do usuário (UX/UI). Pensando na evolução do produto para um cenário de produção real, os próximos passos incluiriam:
 
-- **Testes Automatizados:** Implementação de uma suíte de testes focando principalmente em **Testes de Integração para os fluxos críticos** da aplicação (como o processo de autenticação, adição de cartas e criação de ofertas de troca). A ideia seria utilizar ferramentas como Vitest e Vue Test Utils para garantir a confiabilidade da comunicação entre a interface (UI), o estado (Pinia) e as chamadas à API.
+- **Expansão da Cobertura de Testes:**
+  - **Cenários de Erro (Unhappy Path):** Implementar testes simulando falhas de rede e rejeições da API para garantir que os tratamentos de erro, empty states e os feedbacks visuais (Toasts) sejam exibidos corretamente ao usuário.
+  - **Testes Unitários:** Isolar e testar individualmente as lógicas e regras de negócio extraídas para os Composables, garantindo maior robustez.
+  - **Testes E2E:** Adicionar Cypress ou Playwright para simular a jornada completa do usuário em um navegador real.
+
 - **Internacionalização (i18n):** Configuração de suporte a múltiplos idiomas (ex: utilizando `vue-i18n`) para tornar o marketplace acessível a um público global.
 
 ### Observação sobre a API OnRender
