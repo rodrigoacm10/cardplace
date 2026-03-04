@@ -154,7 +154,11 @@ const {
                   <div
                     class="w-full h-full border border-zinc-200 bg-white overflow-hidden shadow-sm"
                   >
-                    <img :src="tc.card.imageUrl" class="w-full h-full object-cover" />
+                    <img
+                      :src="tc.card.imageUrl || '/card-sleeve.png'"
+                      @error="(e) => ((e.target as HTMLImageElement).src = '/card-sleeve.png')"
+                      class="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
 
@@ -181,7 +185,8 @@ const {
                 class="w-22 h-32 sm:w-30 sm:h-44 border border-zinc-200 bg-white overflow-hidden shadow-sm transition-transform duration-300 group-hover:scale-105"
               >
                 <img
-                  :src="getReceivingCard(trade)?.card?.imageUrl"
+                  :src="getReceivingCard(trade)?.card?.imageUrl || '/card-sleeve.png'"
+                  @error="(e) => ((e.target as HTMLImageElement).src = '/card-sleeve.png')"
                   class="w-full h-full object-cover"
                 />
               </div>

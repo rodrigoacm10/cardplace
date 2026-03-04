@@ -56,7 +56,11 @@ const getReceivingCard = (trade: Trade) => {
                 @click="navigateToCard(tc.card.id)"
                 class="aspect-472/687 overflow-hidden border border-zinc-100 shadow-sm transition-transform hover:scale-105 active:scale-95 cursor-pointer"
               >
-                <img :src="tc.card.imageUrl" class="w-full h-full object-cover" />
+                <img
+                  :src="tc.card.imageUrl || '/card-sleeve.png'"
+                  @error="(e) => ((e.target as HTMLImageElement).src = '/card-sleeve.png')"
+                  class="w-full h-full object-cover"
+                />
               </div>
               <span class="text-[10px] font-bold text-zinc-500 truncate px-1 text-center">{{
                 tc.card.name
@@ -87,7 +91,8 @@ const getReceivingCard = (trade: Trade) => {
               class="aspect-472/687 overflow-hidden shadow-2xl transition-transform hover:scale-105 cursor-pointer"
             >
               <img
-                :src="getReceivingCard(trade)?.card?.imageUrl"
+                :src="getReceivingCard(trade)?.card?.imageUrl || '/card-sleeve.png'"
+                @error="(e) => ((e.target as HTMLImageElement).src = '/card-sleeve.png')"
                 class="w-full h-full object-cover"
               />
             </div>

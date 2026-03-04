@@ -51,7 +51,7 @@ const cardStyle = computed(() => {
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
-  target.src = 'https://via.placeholder.com/472x687?text=Sem+Imagem'
+  target.src = '/card-sleeve.png'
 }
 </script>
 
@@ -69,7 +69,7 @@ const handleImageError = (event: Event) => {
       @mousemove="handleMouseMove"
     >
       <img
-        :src="imageUrl || 'https://via.placeholder.com/472x687?text=Sem+Imagem'"
+        :src="imageUrl || '/card-sleeve.png'"
         :alt="alt || 'Card'"
         class="object-cover w-full h-full aspect-472/687"
         @error="handleImageError"
