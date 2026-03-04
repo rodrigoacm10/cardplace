@@ -143,10 +143,10 @@ const handleAddCards = () => {
                   </div>
 
                   <img
-                    :src="card.imageUrl"
+                    :src="card.imageUrl || '/card-sleeve.png'"
                     class="w-6 h-8 object-cover rounded border"
                     alt=""
-                    @error="'https://via.placeholder.com/30x40'"
+                    @error="(e) => ((e.target as HTMLImageElement).src = '/card-sleeve.png')"
                   />
 
                   <span

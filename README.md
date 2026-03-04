@@ -78,6 +78,13 @@ Acesse o endereço exibido no terminal (normalmente `http://localhost:5173`) no 
 
 ---
 
+## 🔮 Melhorias Futuras
+
+Devido ao tempo limitado para a entrega do desafio, optei por priorizar a completude dos requisitos funcionais, a arquitetura limpa e a experiência do usuário (UX/UI). Pensando na evolução do produto para um cenário de produção real, os próximos passos incluiriam:
+
+- **Testes Automatizados:** Implementação de uma suíte de testes focando principalmente em **Testes de Integração para os fluxos críticos** da aplicação (como o processo de autenticação, adição de cartas e criação de ofertas de troca). A ideia seria utilizar ferramentas como Vitest e Vue Test Utils para garantir a confiabilidade da comunicação entre a interface (UI), o estado (Pinia) e as chamadas à API.
+- **Internacionalização (i18n):** Configuração de suporte a múltiplos idiomas (ex: utilizando `vue-i18n`) para tornar o marketplace acessível a um público global.
+
 ### Observação sobre a API OnRender
 
 > ⚠️ **Atenção**: Como a API foi hospedada na plataforma Render no tier gratuito, ela hiberna após 30 segundos de inatividade. Em acessos iniciais, as requisições podem demorar cerca de 1 a 2 minutos até que o serviço seja reativado. Tratamentos de _loading screens_ e _skeletons_ foram implementados na UX para minimizar esse desconforto visual.

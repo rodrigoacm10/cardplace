@@ -39,7 +39,7 @@ const formatDate = (dateString: string) => {
 }
 
 const { data: myCollection } = useQuery({
-  queryKey: ['my-collection'],
+  queryKey: ['collection'],
   queryFn: () => CollectionService.getMyCollection().then((res) => res.data),
 })
 
