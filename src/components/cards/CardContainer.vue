@@ -238,9 +238,7 @@ const handleClose = () => {
             "
           ></div>
 
-          <div
-            class="relative z-10 flex flex-col h-full sm:h-auto overflow-y-auto custom-scrollbar"
-          >
+          <div class="relative z-10 flex flex-col h-full sm:h-auto custom-scrollbar">
             <div class="flex justify-between items-start">
               <h2
                 class="text-xl font-bold text-white sm:text-app-green truncate pr-2"
